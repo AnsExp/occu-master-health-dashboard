@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class PlanDetail extends Model
+{
+    protected $fillable = [
+        'plan_id',
+        'description'
+    ];
+
+    public function plan(): BelongsTo
+    {
+        // Hierarchy::$STACK[0][''];
+        return $this->belongsTo(Plan::class);
+    }
+}
