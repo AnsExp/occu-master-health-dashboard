@@ -8,7 +8,7 @@
 		$taxRate = config('app.tax_rate');
 	@endphp
 
-	<section class="mx-auto max-w-6xl py-6">
+	<section class="w-full py-6">
 		<div class="mb-6">
 			<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Crear Orden de Pago</h1>
 			<p class="mt-1 text-sm text-gray-500">Busca un paciente y calcula la orden automáticamente. El envío se
@@ -121,8 +121,8 @@
 										class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-base text-gray-900 shadow-sm focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 sm:text-sm"
 										value="{{ $patient?->gender ?? '' }}">
 										<option value="" selected disabled>Selecciona una opción</option>
-										@foreach (App\Models\Gender::cases() as $gender)
-											<option value="{{ $gender->name }}" {{ $patient?->gender === $gender->name ? 'selected' : '' }}>{{ $gender->label() }}</option>
+										@foreach (App\Enums\GenderEnum::cases() as $gender)
+											<option value="{{ $gender->code() }}" {{ $patient?->gender === $gender->code() ? 'selected' : '' }}>{{ $gender->label() }}</option>
 										@endforeach
 									</select>
 								</div>

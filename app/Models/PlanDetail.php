@@ -14,7 +14,6 @@ class PlanDetail extends Model
 
     public function plan(): BelongsTo
     {
-        // Hierarchy::$STACK[0][''];
         return $this->belongsTo(Plan::class);
     }
 }

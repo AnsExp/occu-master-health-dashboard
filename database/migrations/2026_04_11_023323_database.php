@@ -10,14 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::create('specialties', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->nullable(false);
+            $table->timestamps();
+        });
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('first_name')->nullable(false);
+            $table->string('last_name')->nullable(false);
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('specialty_id')->constrained('specialties')->cascadeOnDelete();
             $table->string('id_card')->unique();
-            $table->string('specialty')->nullable();
             $table->string('phone')->unique();
-            $table->string('email')->unique();
             $table->timestamps();
         });
         Schema::create('patients', function (Blueprint $table) {
@@ -50,17 +55,13 @@ return new class extends Migration {
         });
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')
-                ->constrained('patients')
-                ->cascadeOnDelete();
+            $table->foreignId('patient_id')->constrained('patients')->cascadeOnDelete();
             $table->string('order_number')->unique();
             $table->timestamps();
         });
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')
-                ->constrained('orders')
-                ->cascadeOnDelete();
+            $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
             $table->string('item');
             $table->integer('quantity')->default(1);
             $table->decimal('price', 10, 2)->default(0.00);
@@ -70,19 +71,10 @@ return new class extends Migration {
             $table->id();
             $table->string('title')->nullable(false);
             $table->string('type')->nullable(false);
-            $table->foreignId('order_id')
-                ->nullable()
-                ->constrained('orders')
-                ->cascadeOnDelete();
-            $table->foreignId('doctor_id')
-                ->nullable(false)
-                ->constrained('doctors')
-                ->cascadeOnDelete();
-            $table->foreignId('patient_id')
-                ->nullable(false)
-                ->constrained('patients')
-                ->cascadeOnDelete();
-            $table->longText('content');
+            $table->foreignId('order_id')->nullable(false)->constrained('orders')->cascadeOnDelete();
+            $table->foreignId('doctor_id')->nullable(false)->constrained('doctors')->cascadeOnDelete();
+            $table->foreignId('patient_id')->nullable(false)->constrained('patients')->cascadeOnDelete();
+            $table->json('content')->nullable(false);
             $table->timestamps();
         });
         Schema::create('audit_logs', function (Blueprint $table) {
@@ -112,6 +104,8 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::dropIfExists('doctors');
+        Schema::dropIfExists('specialties');
+        Schema::dropIfExists('doctors_specialties');
         Schema::dropIfExists('patients');
         Schema::dropIfExists('certificates');
         Schema::dropIfExists('plans');

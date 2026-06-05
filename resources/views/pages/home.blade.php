@@ -3,11 +3,6 @@
 @section('title', 'Home')
 
 @section('content')
-	@auth
-		<div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-			Bienvenido, {{ auth()->user()->name }}. Explora las funcionalidades disponibles en el panel de administración.
-		</div>
-	@endauth
 	<section
 		class="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-cyan-50 p-6 sm:p-10">
 		<div class="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-cyan-200/40 blur-3xl"></div>
@@ -34,10 +29,17 @@
 						class="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700">
 						Gestionar planes
 					</a>
-					<a href="{{ route('login') }}"
-						class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
-						Acceder al panel
-					</a>
+					@if (auth()->check())
+						<a href="{{ route('logout') }}"
+							class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
+							Cerrar sesión
+						</a>
+					@else
+						<a href="{{ route('login') }}"
+							class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
+							Acceder al panel
+						</a>
+					@endif
 				</div>
 			</div>
 
@@ -53,19 +55,19 @@
 
 				<div class="grid grid-cols-2 gap-3">
 					<div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
-						<p class="text-xs text-slate-500">Modulos</p>
-						<p class="mt-1 text-2xl font-semibold text-slate-900">12</p>
+						<p class="text-xs text-slate-500">Pacientes</p>
+						<p class="mt-1 text-2xl font-semibold text-slate-900">{{ \App\Models\Patient::count() }}</p>
 					</div>
 					<div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
-						<p class="text-xs text-slate-500">Actualizaciones</p>
-						<p class="mt-1 text-2xl font-semibold text-slate-900">34</p>
+						<p class="text-xs text-slate-500">Médicos</p>
+						<p class="mt-1 text-2xl font-semibold text-slate-900">{{ \App\Models\Doctor::count() }}</p>
 					</div>
 					<div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
 						<p class="text-xs text-slate-500">Planes activos</p>
-						<p class="mt-1 text-2xl font-semibold text-slate-900">8</p>
+						<p class="mt-1 text-2xl font-semibold text-slate-900">{{ \App\Models\Plan::count() }}</p>
 					</div>
 					<div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
-						<p class="text-xs text-slate-500">Version</p>
+						<p class="text-xs text-slate-500">Versión</p>
 						<p class="mt-1 text-sm font-semibold text-slate-900">v{{ app()->version() }}</p>
 					</div>
 				</div>
@@ -73,12 +75,12 @@
 		</div>
 	</section>
 
-	<section class="mt-6 grid gap-4 md:grid-cols-3">
+	{{-- <section class="mt-6 grid gap-4 md:grid-cols-3">
 		<article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
 			<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Editor visual</p>
 			<h2 class="mt-2 text-lg font-semibold text-slate-900">Bloques configurables</h2>
 			<p class="mt-2 text-sm leading-6 text-slate-600">
-				Administra secciones principales sin tocar codigo: hero, destacados, llamadas a la accion y mas.
+				Administra secciones principales sin tocar código: hero, destacados, llamadas a la acción y más.
 			</p>
 		</article>
 
@@ -86,16 +88,16 @@
 			<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Planes</p>
 			<h2 class="mt-2 text-lg font-semibold text-slate-900">Control comercial</h2>
 			<p class="mt-2 text-sm leading-6 text-slate-600">
-				Crea planes con nombre, precio, periodicidad e items incluidos para mantener una oferta clara.
+				Crea planes con nombre, precio, periodicidad e ítems incluidos para mantener una oferta clara.
 			</p>
 		</article>
 
 		<article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
 			<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Operaciones</p>
-			<h2 class="mt-2 text-lg font-semibold text-slate-900">Monitoreo rapido</h2>
+			<h2 class="mt-2 text-lg font-semibold text-slate-900">Monitoreo rápido</h2>
 			<p class="mt-2 text-sm leading-6 text-slate-600">
 				Visualiza el estado del sistema y la actividad reciente para detectar cambios relevantes al instante.
 			</p>
 		</article>
-	</section>
+	</section> --}}
 @endsection

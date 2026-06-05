@@ -3,7 +3,7 @@
 @section('title', 'Editar Plan')
 
 @section('content')
-    <section class="mx-auto max-w-4xl py-6">
+    <section class="w-full py-6">
         <div class="mb-6">
             <h1 class="text-2xl font-semibold tracking-tight text-gray-900">
                 {{ $plan ? $plan->name : 'Registrar Plan' }}
@@ -37,7 +37,7 @@
                         </label>
                         <input id="name" name="name" type="text" value="{{ $plan->name ?? old('name') }}" required
                             class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
-                            placeholder="Ej: Ana María" />
+                            placeholder="Ej: Ana María" autocomplete="name" />
                     </div>
 
                     <div>
@@ -58,53 +58,38 @@
                         <select id="periodicity" name="periodicity" required
                             class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800">
                             <option value="" disabled {{ !isset($plan) ? 'selected' : '' }}>Selecciona una opción</option>
-                            @foreach (App\Models\Periodicity::cases() as $option)
-                                <option value="{{ $option->value }}" {{ (isset($plan) && $plan->periodicity === $option->value) || old('periodicity') === $option->value ? 'selected' : '' }}>
-                                    {{ ucfirst($option->value) }}
+                            @foreach (App\Enums\PeriodicityEnum::cases() as $option)
+                                <option value="{{ $option->code() }}" {{ (isset($plan) && $plan->periodicity === $option->code()) || old('periodicity') === $option->code() ? 'selected' : '' }}>
+                                    {{ ucfirst($option->label()) }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div>
-                        <label for="phone" class="mb-1 block text-sm font-medium text-gray-700">
-                            Teléfono
-                            <span class="text-red-600">*</span>
+                    <div class="sm:col-span-2">
+                        <label for="items" class="mb-1 block text-sm font-medium text-gray-700">
+                            Items incluidos en el plan (uno por línea)
                         </label>
-                        <input id="phone" name="phone" type="text" value="{{ $doctor->phone ?? old('phone') }}" required
+                        <textarea id="items" name="items" rows="5"
                             class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
-                            placeholder="Ej: 8091234567" />
-                    </div>
-
-                    <div>
-                        <label for="email" class="mb-1 block text-sm font-medium text-gray-700">
-                            Correo
-                            <span class="text-red-600">*</span>
-                        </label>
-                        <input id="email" name="email" type="email" value="{{ $doctor->email ?? old('email') }}" required
-                            class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
-                            placeholder="doctor@correo.com" />
+                            placeholder="Item 1&#10;Item 2&#10;Item 3">{{ isset($plan) ? implode("\n", $plan->details->pluck('detail')->toArray()) : old('items') }}</textarea>
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label for="address" class="mb-1 block text-sm font-medium text-gray-700">
-                            Dirección
+                        <label for="description" class="mb-1 block text-sm font-medium text-gray-700">
+                            Descripción
                             <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="address" name="address" rows="3" required
+                        <textarea id="description" name="description" rows="5" required
                             class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
-                            placeholder="Calle, número, sector, ciudad">{{ $doctor->address ?? old('address') }}</textarea>
+                            placeholder="Descripción del plan">{{ $plan->description ?? old('description') }}</textarea>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
-                    <a href="{{ route('doctors') }}"
-                        class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-300 px-5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
-                        Cancelar
-                    </a>
                     <button type="submit"
                         class="inline-flex h-10 items-center justify-center rounded-lg bg-gray-900 px-5 text-sm font-medium text-white transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">
-                        Guardar doctor
+                        Guardar Plan
                     </button>
                 </div>
             </form>

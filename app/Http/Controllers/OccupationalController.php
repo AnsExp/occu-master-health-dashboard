@@ -25,11 +25,14 @@ class OccupationalController extends Controller
 
     public function store(Request $request)
     {
+        if (!Permission::has(Permission::WRITE_OCCUPATIONAL)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
         $validated = $request->validate([
             'order.id' => ['required', 'exists:orders,id'],
             'order.order_number' => ['required', 'exists:orders,order_number'],
             'doctor.id' => ['required', 'exists:doctors,id'],
-            'medical_exam' => ['required'],
+            'medical_exam' => ['required', 'array'],
         ]);
 
         $certificate_existing = Certificate::where('order_id', $validated['order']['id'])->where('type', CertificateType::OCCUPATIONAL)->exists();
@@ -38,21 +41,15 @@ class OccupationalController extends Controller
             return response()->json(['error' => 'Ya existe un certificado para esta orden.'], 422);
         }
 
-        $order = Order::find($validated['order']['id']);
-
         $certificate = Certificate::create([
             'title' => 'Certificado de Salud Ocupacional - Orden #' . $validated['order']['order_number'],
             'type' => CertificateType::OCCUPATIONAL,
             'order_id' => $validated['order']['id'],
             'doctor_id' => $validated['doctor']['id'],
-            'patient_id' => $order->patient->id,
+            'patient_id' => Order::find($validated['order']['id'])->patient->id,
             'content' => json_encode($validated['medical_exam']),
         ]);
 
-        return response()->json([
-            'raw' => $certificate,
-            'validated' => $validated,
-            'pdf_url' => route('certificates.pdf', ['certificate' => $certificate]),
-        ]);
+        return redirect()->route('certificates.pdf', ['certificate' => $certificate]);
     }
 }

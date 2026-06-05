@@ -12,7 +12,7 @@ class PDFController extends Controller
     {
         return match ($certificate->type) {
             CertificateType::AUDIOLOGY => $this->document('documents.audiology', $certificate, 'audiology'),
-            CertificateType::OFTALMOLOGY => $this->document('documents.ophthalmology', $certificate, 'ophthalmology'),
+            CertificateType::OPHTHALMOLOGY => $this->document('documents.ophthalmology', $certificate, 'ophthalmology'),
             CertificateType::OCCUPATIONAL => $this->document('documents.occupational', $certificate, 'occupational'),
             default => view('pages.home')
         };

@@ -5,6 +5,6 @@ class CertificateType
 {
     public const ORDER = 'ORDER';
     public const AUDIOLOGY = 'AUDIOLOGY';
-    public const OFTALMOLOGY = 'OFTALMOLOGY';
+    public const OPHTHALMOLOGY = 'OPHTHALMOLOGY';
     public const OCCUPATIONAL = 'OCCUPATIONAL';
 }

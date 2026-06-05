@@ -13,6 +13,8 @@
         "barryvdh/laravel-dompdf": "*",
         "laravel/framework": "13.4.0",
         "laravel/tinker": "3.0.0",
+        "setasign/fpdf": "^1.8",
+        "setasign/fpdi": "^2.6",
         "spatie/laravel-permission": "^7.4"
     },
     "require-dev": {

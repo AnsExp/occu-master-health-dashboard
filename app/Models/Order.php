@@ -113,4 +113,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
+
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
 }

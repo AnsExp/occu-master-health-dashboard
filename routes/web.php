@@ -3,7 +3,7 @@
 use App\Http\Controllers\AudiologyController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CertificateController;
-use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\FormController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OccupationalController;
 use App\Http\Controllers\OphthalmologyController;
@@ -14,7 +14,14 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/welcome', fn() => view('welcome'))->name('welcome');
+/**
+ * Here is where you can register web routes for your application. These routes are loaded by the RouteServiceProvider within a group which
+ * contains the "web" middleware group. Now create something great!
+ */
+// Route::get('/welcome', fn() => view('welcome'))->name('welcome');
+// Route::get('/403', fn() => view('errors.403'))->name('error.403');
+// Route::get('/404', fn() => view('errors.404'))->name('error.404');
+// Route::get('/500', fn() => view('errors.500'))->name('error.500');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -26,31 +33,28 @@ Route::post('/login', [AuthenticationController::class, 'authenticate'])->name('
 
 Route::get('/users', [UserController::class, 'index'])->name('users');
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::get('/users/edit/{user?}', [UserController::class, 'edit'])->name('users.edit');
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-Route::get('/users/edit', [UserController::class, 'edit'])->name('users.edit');
-Route::patch('/users/{user}/profile', [UserController::class, 'updateProfile'])->name('users.update.profile');
-Route::patch('/users/{user}/password', [UserController::class, 'updatePassword'])->name('users.update.password');
+Route::patch('/users/profile/{user}', [UserController::class, 'updateProfile'])->name('users.update.profile');
+Route::patch('/users/password/{user}', [UserController::class, 'updatePassword'])->name('users.update.password');
 
 Route::get('/plans', [PlanController::class, 'index'])->name('plans');
-Route::get('/plans/edit', [PlanController::class, 'edit'])->name('plans.edit');
+Route::get('/plans/edit/{plan?}', [PlanController::class, 'edit'])->name('plans.edit');
 Route::get('/plans/json', [PlanController::class, 'json'])->name('plans.json');
 Route::post('/plans', [PlanController::class, 'store'])->name('plans.store');
 Route::put('/plans/{plan}', [PlanController::class, 'update'])->name('plans.update');
 Route::delete('/plans/{plan}', [PlanController::class, 'destroy'])->name('plans.destroy');
 
 Route::get('/orders/edit', [OrderController::class, 'edit'])->name('orders.edit');
-Route::get('/orders/{order}', [OrderController::class, 'pdf'])->name('orders.pdf');
+Route::get('/orders/{order:order_number}', [OrderController::class, 'pdf'])->name('orders.pdf');
 Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-
-Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
-Route::get('/doctors/edit', [DoctorController::class, 'edit'])->name('doctors.edit');
-Route::post('/doctors', [DoctorController::class, 'store'])->name('doctors.store');
 
 Route::get('/patients', [PatientController::class, 'index'])->name('patients');
 
 Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates');
 
+Route::get('/forms', [FormController::class, 'index'])->name('forms');
 Route::get('/forms/audiology', [AudiologyController::class, 'index'])->name('form.audiology');
 Route::get('/forms/occupational', [OccupationalController::class, 'index'])->name('form.occupational');
 Route::get('/forms/ophthalmology', [OphthalmologyController::class, 'index'])->name('form.ophthalmology');

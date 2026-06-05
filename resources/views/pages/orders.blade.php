@@ -3,7 +3,7 @@
 @section('title', 'Crear Orden de Pago')
 
 @php
-	use App\Models\Permissions;
+	use App\Models\Permission;
 @endphp
 
 @section('content')
@@ -19,7 +19,7 @@
 					<span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
 						{{ $orders->total() }} registros
 					</span>
-					@if (Permissions::hasPermission(Permissions::WRITE_ORDERS))
+					@if (Permission::has(Permission::WRITE_ORDERS))
 						<a href="{{ route('orders.edit') }}"
 							class="ml-4 rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-white">Crear</a>
 					@endif
@@ -114,7 +114,7 @@
 							</td>
 							<td class="px-6 py-4 text-right">
 								<div class="flex justify-end gap-2">
-									<a href="{{ route('orders.pdf', ['order' => $order]) }}" target="_blank" rel="noopener"
+									<a href="{{ route('orders.pdf', ['order' => $order->order_number]) }}" target="_blank" rel="noopener"
 										class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50">Ver</a>
 								</div>
 							</td>

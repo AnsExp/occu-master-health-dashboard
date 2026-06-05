@@ -3,7 +3,6 @@
 @section('title', 'Formulario de salud ocupacional')
 
 @php
-    $genders = App\Models\Gender::cases();
     $declarationQuestionsPart1 = [
         'Problemas de los ojos visión',
         'Presión arterial alta',
@@ -56,30 +55,14 @@
 @endphp
 
 @section('content')
-    <section class="mx-auto max-w-5xl py-6">
+    <section class="w-full py-6">
         <div class="mb-6">
             <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Formulario de salud ocupacional</h1>
             <p class="mt-1 text-sm text-gray-500">Completa los datos del paciente para generar el certificado.</p>
         </div>
 
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-            <form method="GET" action="{{ route('form.occupational') }}">
-                <div
-                    class="flex flex-col gap-2 border-b border-gray-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p class="text-sm font-medium text-gray-800">Buscar orden de pago</p>
-                    <p class="text-xs text-gray-500">Busca por numero de orden</p>
-                </div>
-
-                <div class="mt-4 flex gap-2">
-                    <input required type="text" name="order_number" value="{{ $order?->order_number ?? '' }}"
-                        autocomplete="off" placeholder="Número de orden…"
-                        class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800" />
-                    <button type="submit"
-                        class="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-gray-900 px-5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">
-                        Buscar
-                    </button>
-                </div>
-            </form>
+            <x-search-order :url="route('form.occupational')" class="mt-6" />
         </div>
 
         <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
@@ -101,21 +84,25 @@
                         <p class="text-xs text-gray-500"><span class="text-red-600">*</span> Campos obligatorios</p>
                     </div>
 
-                    <div class="rounded-xl border border-gray-200 bg-gray-50/70 p-4">
-                        <label for="responsible_doctor_id" class="mb-1 block text-sm font-medium text-gray-700">
-                            Médico responsable
-                            <span class="text-red-600">*</span>
-                        </label>
-                        <select id="responsible_doctor_id" name="doctor[id]" required
-                            class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800">
-                            <option value="" selected disabled>Selecciona un médico</option>
-                            @foreach (App\Models\Doctor::orderBy('first_name')->get() as $doctor)
-                                <option value="{{ $doctor->id }}">{{ $doctor->first_name }} {{ $doctor->last_name }}
-                                    ({{ $doctor->specialty }})</option>
-                            @endforeach
-                        </select>
-                        <p class="mt-1 text-xs text-gray-500">Escoja al médico responsable de la orden.</p>
-                    </div>
+                    @if (App\Enums\RoleEnum::has(App\Enums\RoleEnum::DOCTOR))
+                        <input type="hidden" name="doctor[id]" value="{{ auth()->user()->doctor->id }}">
+                    @else
+                        <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-4">
+                            <label for="responsible_doctor_id" class="mb-1 block text-sm font-medium text-gray-700">
+                                Médico responsable
+                                <span class="text-red-600">*</span>
+                            </label>
+                            <select id="responsible_doctor_id" name="doctor[id]" required
+                                class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800">
+                                <option value="" selected disabled>Selecciona un médico</option>
+                                @foreach (App\Models\User::role(App\Enums\RoleEnum::DOCTOR->code())->get() as $doctor)
+                                    <option value="{{ $doctor->doctor->id }}">{{ $doctor->name }}
+                                        ({{ $doctor->doctor?->specialty ?? 'Sin especialidad' }})</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Escoja al médico responsable de la orden.</p>
+                        </div>
+                    @endif
 
                     <div class="rounded-xl border border-gray-200 bg-gray-50/70 p-4">
                         <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600">
@@ -146,13 +133,15 @@
                                                 class="text-red-600">*</span></p>
                                         <div class="mt-3 flex items-center gap-4">
                                             <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                                <input type="radio" name="medical_exam[declarations][0][questions][{{ $index }}][value]"
+                                                <input type="radio"
+                                                    name="medical_exam[declarations][0][questions][{{ $index }}][value]"
                                                     value="true" required
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                                 Sí
                                             </label>
                                             <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                                <input type="radio" name="medical_exam[declarations][0][questions][{{ $index }}][value]"
+                                                <input type="radio"
+                                                    name="medical_exam[declarations][0][questions][{{ $index }}][value]"
                                                     value="false" required
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                                 No
@@ -316,8 +305,8 @@
                                 <select required id="clinical-blood-type" name="medical_exam[clinical_data][blood_type]"
                                     class="w-20 rounded border border-gray-200 bg-white px-2 py-1 text-center text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800">
                                     <option value="" disabled selected>Seleccione...</option>
-                                    @foreach (App\Models\BloodTypes::cases() as $bloodType)
-                                        <option value="{{ $bloodType->value }}">{{ $bloodType->value }}</option>
+                                    @foreach (App\Enums\BloodTypeEnum::cases() as $bloodType)
+                                        <option value="{{ $bloodType->label() }}">{{ $bloodType->label() }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -410,8 +399,7 @@
                                 <div class="flex items-center gap-2">
                                     <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                         <input required type="radio" name="medical_exam[clinical_data][chest_xray][status]"
-                                            value="Se hizo"
-                                            class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                            value="Se hizo" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                         Se hizo
                                     </label>
                                     <label class="inline-flex items-center gap-2 text-sm text-gray-700">
@@ -422,7 +410,8 @@
                                     </label>
                                 </div>
                                 <label for="clinical-chest-xray-date" class="text-sm font-medium text-gray-700">Fecha</label>
-                                <input required id="clinical-chest-xray-date" name="medical_exam[clinical_data][chest_xray][date]" type="date"
+                                <input required id="clinical-chest-xray-date"
+                                    name="medical_exam[clinical_data][chest_xray][date]" type="date"
                                     class="w-full rounded border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800" />
                             </div>
 
@@ -469,17 +458,18 @@
                                             <td class="border border-gray-200 bg-gray-50 px-2 py-2 font-medium">{{ $row['label'] }}
                                             </td>
                                             <td class="border border-gray-200 text-center">
-                                                <input required type="radio" name="medical_exam[other_tests][{{ $loop->index }}][status]"
-                                                    value="Normal"
+                                                <input required type="radio"
+                                                    name="medical_exam[other_tests][{{ $loop->index }}][status]" value="Normal"
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             </td>
                                             <td class="border border-gray-200 text-center">
-                                                <input required type="radio" name="medical_exam[other_tests][{{ $loop->index }}][status]"
-                                                    value="Anormal"
+                                                <input required type="radio"
+                                                    name="medical_exam[other_tests][{{ $loop->index }}][status]" value="Anormal"
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             </td>
                                             <td class="border border-gray-200 p-1.5">
-                                                <input required type="text" name="medical_exam[other_tests][{{ $loop->index }}][detail]"
+                                                <input required type="text"
+                                                    name="medical_exam[other_tests][{{ $loop->index }}][detail]"
                                                     class="w-full rounded border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800" />
                                             </td>
                                         </tr>
@@ -554,8 +544,8 @@
                                     Apto
                                 </label>
                                 <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                    <input required type="radio" name="medical_exam[aptitude_eval][watchkeeping]" value="No apto"
-                                        class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                    <input required type="radio" name="medical_exam[aptitude_eval][watchkeeping]"
+                                        value="No apto" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                     No apto
                                 </label>
                             </div>
@@ -639,7 +629,8 @@
                                 <label for="aptitude-observations"
                                     class="mb-1 block text-sm font-medium text-gray-700">Observaciones y evaluación de la
                                     aptitud del médico</label>
-                                <textarea required id="aptitude-observations" name="medical_exam[aptitude_eval][observations]" rows="5"
+                                <textarea required id="aptitude-observations" name="medical_exam[aptitude_eval][observations]"
+                                    rows="5"
                                     class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
                                     placeholder="Razones para cualquier limitación o conclusión clínica"></textarea>
                             </div>
@@ -649,13 +640,13 @@
                             <span class="text-sm font-medium text-gray-700">Obligación de llevar lentes correctores</span>
                             <div class="flex flex-wrap items-center gap-6 rounded-lg border border-gray-200 bg-white px-3 py-2">
                                 <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                    <input required type="radio" name="medical_exam[aptitude_eval][corrective_lenses]" value="true"
-                                        class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                    <input required type="radio" name="medical_exam[aptitude_eval][corrective_lenses]"
+                                        value="true" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                     Sí
                                 </label>
                                 <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                    <input required type="radio" name="medical_exam[aptitude_eval][corrective_lenses]" value="false"
-                                        class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                    <input required type="radio" name="medical_exam[aptitude_eval][corrective_lenses]"
+                                        value="false" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                     No
                                 </label>
                             </div>

@@ -62,7 +62,7 @@
                                     {{ $patient->id_card }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-gray-700">
-                                    {{ App\Models\Gender::fromString($patient->gender)->label() }}
+                                    {{ App\Enums\GenderEnum::fromCode($patient->gender)?->label() ?? 'Desconocido' }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-gray-700">
                                     {{ $patient->birth_date->format('F d, Y') }}

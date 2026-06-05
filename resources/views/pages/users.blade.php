@@ -31,7 +31,7 @@
                     {{ $data->total() }} registros
                 </span>
                 @if (Permission::has(Permission::WRITE_USERS))
-                <a href="{{ route('users.edit') }}" class="ml-4 rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-white">Crear</a>
+                <a href="{{ route('users.edit', ['user' => null]) }}" class="ml-4 rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-white">Crear</a>
                 @endif
             </div>
         </div>
@@ -58,8 +58,11 @@
                                         {{ $link['label'] }}
                                     </a>
                                 </th>
-                                @endforeach
+                            @endforeach
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Rol</th>
+                            @if (Permission::has([Permission::WRITE_USERS, Permission::ERASE_USERS]))
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600"></th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
@@ -72,13 +75,20 @@
                                     {{ $user->email }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-gray-700">
+                                    {{ implode(', ', array_map(fn($role)=> App\Enums\RoleEnum::fromCode($role)->label(), $user->getRoleNames()->toArray())) }}
+                                </td>
+                                <td class="px-4 py-3 align-top text-gray-700">
                                     <div class="flex items-center gap-4 justify-end">
-                                        <a href="{{ route('users.edit', ['id' => $user->id]) }}" class="text-gray-700 hover:underline">Detalles</a>
-                                        <form action="{{ route('users.destroy', ['user' => $user->id]) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:underline cursor-pointer">Eliminar</button>
-                                        </form>
+                                        @if (Permission::has(Permission::WRITE_USERS))
+                                            <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="text-gray-700 hover:underline">Detalles</a>
+                                        @endif
+                                        @if (Permission::has(Permission::ERASE_USERS))
+                                            <form action="{{ route('users.destroy', ['user' => $user->id]) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:underline cursor-pointer">Eliminar</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

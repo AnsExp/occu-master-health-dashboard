@@ -9,10 +9,12 @@
 </head>
 
 <body>
-    @include('components.header')
-    <main class="container mx-auto p-4">
-        @yield('content')
-    </main>
+    <div class="grid min-h-[620px] grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)]">
+        @include('components.header')
+        <div class="p-6 sm:p-8 lg:p-10">
+            @yield('content')
+        </div>
+    </div>
     @include('components.footer')
     @stack('scripts')
 </body>

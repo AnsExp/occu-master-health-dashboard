@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Metadata;
+use App\Models\Certificate;
+use App\Models\CertificateType;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Patient;
@@ -130,7 +132,7 @@ class OrderController extends Controller
             ]);
         }
 
-        return redirect()->intended(route('orders.pdf', ['order' => $order]));
+        return redirect()->intended(route('orders.pdf', ['order' => $order->order_number]));
     }
 
     public function pdf(Order $order)
@@ -138,13 +140,81 @@ class OrderController extends Controller
         if (!Permission::has(Permission::READ_ORDERS)) {
             abort(403);
         }
+
         $order->load(['details', 'patient.metadata']);
-        $pdf = PDF::loadView('documents.order', ['order' => $order]);
+
+        $documents = [];
+
+        $orderPdf = PDF::loadView('documents.order', ['order' => $order]);
+        $orderPdf->setPaper('A4', 'portrait');
+        $orderPdf->render();
+        $documents[] = $orderPdf->output();
+
+        $certificates = $order->certificates()
+            ->orderBy('created_at')
+            ->get();
+
+        foreach ($certificates as $certificate) {
+            $certificatePdf = $this->buildCertificatePdf($certificate);
+            if ($certificatePdf !== null) {
+                $documents[] = $certificatePdf;
+            }
+        }
+
+        $mergedPdf = $this->mergePdfDocuments($documents);
+
+        return response($mergedPdf, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="order-' . $order->order_number . '.pdf"');
+    }
+
+    private function buildCertificatePdf(Certificate $certificate): ?string
+    {
+        $view = match ($certificate->type) {
+            CertificateType::AUDIOLOGY => 'documents.audiology',
+            CertificateType::OPHTHALMOLOGY => 'documents.ophthalmology',
+            CertificateType::OCCUPATIONAL => 'documents.occupational',
+            default => null,
+        };
+
+        if ($view === null) {
+            return null;
+        }
+
+        $certificate->loadMissing(['patient', 'doctor', 'order']);
+
+        $pdf = PDF::loadView($view, ['certificate' => $certificate]);
         $pdf->setPaper('A4', 'portrait');
         $pdf->render();
-        return response($pdf->output(), 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="' . $order->id . '.pdf"');
+
+        return $pdf->output();
+    }
+
+    private function mergePdfDocuments(array $pdfDocuments): string
+    {
+        $fpdiClass = '\\setasign\\Fpdi\\Fpdi';
+        $streamReaderClass = '\\setasign\\Fpdi\\PdfParser\\StreamReader';
+
+        if (!class_exists($fpdiClass) || !class_exists($streamReaderClass)) {
+            throw new \RuntimeException('FPDI library is not available.');
+        }
+
+        $fpdi = new $fpdiClass();
+
+        foreach ($pdfDocuments as $pdfContent) {
+            $pageCount = $fpdi->setSourceFile($streamReaderClass::createByString($pdfContent));
+
+            for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
+                $templateId = $fpdi->importPage($pageNumber);
+                $size = $fpdi->getTemplateSize($templateId);
+                $orientation = $size['width'] > $size['height'] ? 'L' : 'P';
+
+                $fpdi->AddPage($orientation, [$size['width'], $size['height']]);
+                $fpdi->useTemplate($templateId);
+            }
+        }
+
+        return $fpdi->Output('S');
     }
 
     private function generate_number()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\Plan;
 use App\Models\PlanDetail;
 use Illuminate\Http\Request;
@@ -13,6 +14,9 @@ class PatientController extends Controller
      */
     public function index()
     {
+        if (!Permission::has(Permission::READ_PATIENTS)) {
+            abort(403, 'No tienes permiso para acceder a esta página.');
+        }
         return view('pages.patients');
     }
 
@@ -34,6 +38,9 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Permission::has(Permission::WRITE_PATIENTS)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'price' => ['required', 'string', 'max:255'],

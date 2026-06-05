@@ -3,30 +3,14 @@
 @section('title', 'Formulario de oftalmología')
 
 @section('content')
-    <section class="mx-auto max-w-5xl py-6">
+    <section class="w-full py-6">
         <div class="mb-6">
             <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Formulario de oftalmología</h1>
             <p class="mt-1 text-sm text-gray-500">Completa los datos del paciente para generar el certificado.</p>
         </div>
 
-        <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <form method="GET" action="{{ route('form.ophthalmology') }}">
-                <div
-                    class="flex flex-col gap-2 border-b border-gray-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p class="text-sm font-medium text-gray-800">Buscar orden de pago</p>
-                    <p class="text-xs text-gray-500">Busca por numero de orden</p>
-                </div>
-
-                <div class="mt-4 flex gap-2">
-                    <input required type="text" name="order_number" value="{{ $order?->order_number ?? '' }}"
-                        autocomplete="off" placeholder="Número de orden…"
-                        class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800" />
-                    <button type="submit"
-                        class="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-gray-900 px-5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">
-                        Buscar
-                    </button>
-                </div>
-            </form>
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+            <x-search-order :url="route('form.ophthalmology')" class="mt-6" />
         </div>
 
         <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
@@ -46,21 +30,25 @@
                     <input type="hidden" name="order[id]" value="{{ $order->id }}">
                     <input type="hidden" name="order[order_number]" value="{{ $order->order_number }}">
 
-                    <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-4">
-                        <label for="responsible_doctor_id" class="mb-1 block text-sm font-medium text-gray-700">
-                            Médico responsable
-                            <span class="text-red-600">*</span>
-                        </label>
-                        <select id="responsible_doctor_id" name="doctor[id]" required
-                            class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800">
-                            <option value="" selected disabled>Selecciona un médico</option>
-                            @foreach (App\Models\Doctor::orderBy('first_name')->get() as $doctor)
-                                <option value="{{ $doctor->id }}">{{ $doctor->first_name }} {{ $doctor->last_name }}
-                                    ({{ $doctor->specialty }})</option>
-                            @endforeach
-                        </select>
-                        <p class="mt-1 text-xs text-gray-500">Escoja al médico responsable de la orden.</p>
-                    </div>
+                    @if (App\Enums\RoleEnum::has(App\Enums\RoleEnum::DOCTOR))
+                        <input type="hidden" name="doctor[id]" value="{{ auth()->user()->doctor->id }}">
+                    @else
+                        <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-4">
+                            <label for="responsible_doctor_id" class="mb-1 block text-sm font-medium text-gray-700">
+                                Médico responsable
+                                <span class="text-red-600">*</span>
+                            </label>
+                            <select id="responsible_doctor_id" name="doctor[id]" required
+                                class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800">
+                                <option value="" selected disabled>Selecciona un médico</option>
+                                @foreach (App\Models\User::role(App\Enums\RoleEnum::DOCTOR->code())->get() as $doctor)
+                                    <option value="{{ $doctor->doctor->id }}">{{ $doctor->name }}
+                                        ({{ $doctor->doctor?->specialty ?? 'Sin especialidad' }})</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Escoja al médico responsable de la orden.</p>
+                        </div>
+                    @endif
 
                     <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-4">
                         <div class="grid gap-4 lg:grid-cols-2">

@@ -3,7 +3,7 @@
 @section('title', 'Registrar Doctor')
 
 @section('content')
-	<section class="mx-auto max-w-4xl py-6">
+	<section class="w-full py-6">
 		<div class="mb-6">
 			<h1 class="text-2xl font-semibold tracking-tight text-gray-900">
 				{{ $doctor ? $doctor->first_name . ' ' . $doctor->last_name : 'Registrar Doctor' }}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\Plan;
 use App\Models\PlanDetail;
 use Illuminate\Http\Request;
@@ -13,6 +14,9 @@ class PlanController extends Controller
      */
     public function index()
     {
+        if (!Permission::has(Permission::READ_PLANS)) {
+            abort(403, 'No tienes permiso para acceder a esta página.');
+        }
         return view('pages.plans');
     }
 
@@ -34,6 +38,9 @@ class PlanController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Permission::has(Permission::WRITE_PLANS)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'price' => ['required', 'string', 'max:255'],
@@ -77,7 +84,26 @@ class PlanController extends Controller
      */
     public function update(Request $request, Plan $plan)
     {
-        return response()->json(['message' => 'Funcionalidad no implementada'], 501);
+        // return response()->json($request->all());
+        if (!Permission::has(Permission::WRITE_PLANS)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'price' => ['required', 'string', 'max:255'],
+            'periodicity' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+        ]);
+        $items = explode("\n", $request->input('items', ''));
+        $plan->update($data);
+        $plan->details()->delete();
+        foreach ($items as $item) {
+            $detail = new PlanDetail();
+            $detail->plan_id = $plan->id;
+            $detail->detail = trim($item);
+            $detail->save();
+        }
+        return redirect()->route('plans')->with('status', 'Plan actualizado correctamente.');
     }
 
     /**

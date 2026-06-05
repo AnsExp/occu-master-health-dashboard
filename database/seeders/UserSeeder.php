@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RoleEnum;
 use App\Models\Permission as Permissions;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,42 +21,59 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         foreach (Permissions::all() as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::updateOrCreate(
+                ['name' => $permission],
+                ['name' => $permission]
+            );
         }
+        $this->createRoles();
         $this->createAdmin();
         $this->createDoctor();
         $this->createReceptionist();
     }
 
+    private function createRoles()
+    {
+        foreach (RoleEnum::cases() as $role) {
+            Role::updateOrCreate(
+                ['name' => $role->code()],
+                ['name' => $role->code()]
+            );
+        }
+    }
+
     private function createReceptionist()
     {
-        $roleReceptionist = Role::create(['name' => \App\Models\Role::RECEPTIONIST]);
-        $roleReceptionist->givePermissionTo([
-            Permissions::READ_ORDERS,
-            Permissions::WRITE_ORDERS
-        ]);
+        $roleReceptionist = Role::where('name', RoleEnum::RECEPTIONIST->code())->first();
+        if ($roleReceptionist) {
+            $roleReceptionist->givePermissionTo([
+                Permissions::READ_ORDERS,
+                Permissions::WRITE_ORDERS
+            ]);
+        }
     }
 
     private function createDoctor()
     {
-        $roleDoctor = Role::create(['name' => \App\Models\Role::DOCTOR]);
-        $roleDoctor->givePermissionTo([
-            Permissions::READ_PATIENTS,
-            Permissions::WRITE_PATIENTS,
-            Permissions::READ_ORDERS,
-            Permissions::WRITE_ORDERS
-        ]);
+        $roleDoctor = Role::where('name', RoleEnum::DOCTOR->code())->first();
+        if ($roleDoctor) {
+            $roleDoctor->givePermissionTo([
+                Permissions::READ_PATIENTS,
+                Permissions::WRITE_PATIENTS,
+            ]);
+        }
     }
 
     private function createAdmin()
     {
-        $roleAdmin = Role::create(['name' => \App\Models\Role::ADMINISTRATOR]);
-        $roleAdmin->givePermissionTo(Permission::all());
-        $userAdmin = User::create([
-            'email' => 'admin@email.com',
-            'name' => 'Admin',
-            'password' => Hash::make('admin')
-        ]);
+        $roleAdmin = Role::where('name', RoleEnum::ADMINISTRATOR->code())->first();
+        if ($roleAdmin) {
+            $roleAdmin->givePermissionTo(Permission::all());
+        }
+        $userAdmin = User::updateOrCreate(
+            ['email' => 'admin@email.com'],
+            ['name' => 'Admin', 'password' => Hash::make('admin')]
+        );
         $userAdmin->assignRole($roleAdmin);
     }
 }

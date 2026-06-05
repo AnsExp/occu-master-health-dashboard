@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
-enum Specialty
-{
-    case CARDIOLOGY;
-    case DERMATOLOGY;
-    case NEUROLOGY;
-    case PEDIATRICS;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-    public function label(): string
+class Specialty extends Model
+{
+    protected $fillable = [
+        'name',
+    ];
+
+    public function doctors(): HasMany
     {
-        return match ($this) {
-            self::CARDIOLOGY => 'Cardiología',
-            self::DERMATOLOGY => 'Dermatología',
-            self::NEUROLOGY => 'Neurología',
-            self::PEDIATRICS => 'Pediatría',
-            default => 'Desconocida',
-        };
+        return $this->hasMany(Doctor::class, 'specialty_id');
     }
 }

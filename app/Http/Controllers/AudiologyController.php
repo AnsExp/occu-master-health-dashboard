@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Certificate;
 use App\Models\CertificateType;
 use App\Models\Order;
+use App\Models\Permission;
 use Illuminate\Http\Request;
 
 class AudiologyController extends Controller
 {
     public function index()
     {
+        if (!Permission::has(Permission::READ_AUDIOLOGY)) {
+            abort(403, 'No tienes permiso para acceder a esta página.');
+        }
         $order_number = request('order_number');
         $order = null;
         if ($order_number) {
@@ -21,6 +25,9 @@ class AudiologyController extends Controller
 
     public function store(Request $request)
     {
+        if (!Permission::has(Permission::WRITE_AUDIOLOGY)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
         $validated = $request->validate([
             'order.id' => ['required', 'exists:orders,id'],
             'order.order_number' => ['required', 'exists:orders,order_number'],
