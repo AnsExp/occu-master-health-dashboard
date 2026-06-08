@@ -14,10 +14,13 @@ class PlanController extends Controller
      */
     public function index()
     {
-        if (!Permission::has(Permission::READ_PLANS)) {
-            abort(403, 'No tienes permiso para acceder a esta página.');
+        if (!request()->user()->can('viewAny', Plan::class)) {
+            abort(403);
         }
-        return view('pages.plans');
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+        $data = Plan::orderBy($sort, $direction)->paginate(10);
+        return view('pages.plans', compact('data', 'sort', 'direction'));
     }
 
     /**
@@ -25,7 +28,10 @@ class PlanController extends Controller
      */
     public function create()
     {
-        //
+        if (!request()->user()->can('create', Plan::class)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
+        return view('forms.plans', ['plan' => null]);
     }
 
     public function json()
@@ -38,7 +44,7 @@ class PlanController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Permission::has(Permission::WRITE_PLANS)) {
+        if (!request()->user()->can('create', Plan::class)) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         $data = $request->validate([
@@ -69,12 +75,10 @@ class PlanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request)
+    public function edit(Plan $plan)
     {
-        $id = $request->input('id', null);
-        $plan = null;
-        if ($id) {
-            $plan = Plan::with('details')->find($id);
+        if (!request()->user()->can('update', $plan)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
         }
         return view('forms.plans', ['plan' => $plan]);
     }
@@ -84,8 +88,7 @@ class PlanController extends Controller
      */
     public function update(Request $request, Plan $plan)
     {
-        // return response()->json($request->all());
-        if (!Permission::has(Permission::WRITE_PLANS)) {
+        if (!request()->user()->can('update', $plan)) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         $data = $request->validate([
@@ -111,6 +114,9 @@ class PlanController extends Controller
      */
     public function destroy(Plan $plan)
     {
+        if (!request()->user()->can('delete', $plan)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
         $plan->delete();
         return redirect()->route('plans')->with('status', 'Plan eliminado correctamente.');
     }

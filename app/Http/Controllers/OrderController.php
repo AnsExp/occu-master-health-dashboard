@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActionEnum;
+use App\Enums\TableEnum;
 use App\Models\Metadata;
 use App\Models\Certificate;
 use App\Models\CertificateType;
@@ -16,23 +18,23 @@ class OrderController extends Controller
 {
     public function index()
     {
-        if (!Permission::has(Permission::READ_ORDERS)) {
+        if (!request()->user()->can('viewAny', Order::class)) {
             abort(403);
         }
         $filters = [
-            'patient_id_card' => request('patient_id_card', null),
+            'id_card' => request('id_card', null),
             'order_number' => request('order_number', null),
             'start_date' => request('start_date', null),
             'end_date' => request('end_date', null),
         ];
 
         // Query base
-        $query = Order::with('patient');
+        $query = Order::with(['patient', 'details']);
 
         // Filtro por cédula del paciente
-        if ($filters['patient_id_card']) {
+        if ($filters['id_card']) {
             $query->whereHas('patient', function ($q) use ($filters) {
-                $q->where('id_card', 'like', "%{$filters['patient_id_card']}%");
+                $q->where('id_card', 'like', "%{$filters['id_card']}%");
             });
         }
 
@@ -61,12 +63,12 @@ class OrderController extends Controller
         return view('pages.orders', ['filters' => $filters, 'orders' => $ordersPaginated]);
     }
 
-    public function edit(Request $request)
+    public function create()
     {
-        if (!Permission::has(Permission::WRITE_ORDERS)) {
+        if (!request()->user()->can('create', Order::class)) {
             abort(403);
         }
-        $idCard = $request->input('id_card', null);
+        $idCard = request('id_card', null);
         $patient = null;
         if ($idCard) {
             $patient = Patient::with('metadata')->where('id_card', '=', $idCard)->first();
@@ -77,9 +79,14 @@ class OrderController extends Controller
         return view('forms.orders', ['patient' => $patient]);
     }
 
+    public function edit(Order $order)
+    {
+        // This method is not implemented as per the provided routes and views. If needed, it can be implemented similarly to the create method, but loading the existing order data for editing.
+    }
+
     public function store(Request $request)
     {
-        if (!Permission::has(Permission::WRITE_ORDERS)) {
+        if (!request()->user()->can('create', Order::class)) {
             abort(403);
         }
         $details = $request->input('order.details', []);
@@ -118,26 +125,27 @@ class OrderController extends Controller
             );
         }
 
-        $order = new Order(['order_number' => $this->generate_number()]);
+        $order = new Order(['order_number' => Order::generate_number()]);
 
         $order->patient()->associate($patient);
         $order->save();
 
         foreach ($data as $item) {
-            OrderDetail::create([
-                'order_id' => $order->id,
+            $order->details()->create([
                 'item' => $item['name'],
                 'price' => $item['price'],
                 'quantity' => $item['quantity'],
             ]);
         }
 
+        $order->load(['patient', 'details']);
+
         return redirect()->intended(route('orders.pdf', ['order' => $order->order_number]));
     }
 
     public function pdf(Order $order)
     {
-        if (!Permission::has(Permission::READ_ORDERS)) {
+        if (!request()->user()->can('view', $order)) {
             abort(403);
         }
 
@@ -181,7 +189,7 @@ class OrderController extends Controller
             return null;
         }
 
-        $certificate->loadMissing(['patient', 'doctor', 'order']);
+        $certificate->loadMissing(['doctor', 'order']);
 
         $pdf = PDF::loadView($view, ['certificate' => $certificate]);
         $pdf->setPaper('A4', 'portrait');
@@ -215,15 +223,5 @@ class OrderController extends Controller
         }
 
         return $fpdi->Output('S');
-    }
-
-    private function generate_number()
-    {
-        $number = mt_rand(1000000, 9999999);
-        $exists = Order::where('order_number', $number)->exists();
-        if ($exists) {
-            return $this->generate_number();
-        }
-        return $number;
     }
 }

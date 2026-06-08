@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
+use App\Models\Patient;
 use App\Models\Plan;
 use App\Models\PlanDetail;
 use Illuminate\Http\Request;
@@ -14,10 +14,13 @@ class PatientController extends Controller
      */
     public function index()
     {
-        if (!Permission::has(Permission::READ_PATIENTS)) {
-            abort(403, 'No tienes permiso para acceder a esta página.');
+        if (!request()->user()->can('viewAny', Patient::class)) {
+            abort(403);
         }
-        return view('pages.patients');
+        $sort = request('sort', 'first_name');
+        $direction = request('direction', 'asc');
+        $data = Patient::orderBy($sort, $direction)->paginate(10);
+        return view('pages.patients', compact('data', 'sort', 'direction'));
     }
 
     /**
@@ -28,18 +31,13 @@ class PatientController extends Controller
         //
     }
 
-    public function json()
-    {
-        return response()->json(Plan::with('details')->get());
-    }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        if (!Permission::has(Permission::WRITE_PATIENTS)) {
-            abort(403, 'No tienes permiso para realizar esta acción.');
+        if (!request()->user()->can('create', Patient::class)) {
+            abort(403);
         }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -87,6 +85,9 @@ class PatientController extends Controller
      */
     public function destroy(Plan $plan)
     {
+        if (!request()->user()->can('delete', Patient::class)) {
+            abort(403);
+        }
         $plan->delete();
         return redirect()->route('plans')->with('status', 'Plan eliminado correctamente.');
     }

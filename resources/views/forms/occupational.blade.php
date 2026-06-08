@@ -3,6 +3,8 @@
 @section('title', 'Formulario de salud ocupacional')
 
 @php
+    use App\Enums\PermissionEnum;
+
     $declarationQuestionsPart1 = [
         'Problemas de los ojos visión',
         'Presión arterial alta',
@@ -661,7 +663,11 @@
                     </div>
                 </form>
             @else
-                <p class="text-sm text-gray-500">Ingrese un número de orden válido para mostrar el formulario.</p>
+                @if (session('error'))
+                    <p class="text-sm text-red-500">{{ session('error') }}</p>
+                @else
+                    <p class="text-sm text-gray-500">Ingrese un número de orden válido para mostrar el formulario.</p>
+                @endif
             @endif
         </div>
     </section>

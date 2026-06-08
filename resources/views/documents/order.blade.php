@@ -173,7 +173,7 @@
             <td>
                 <p class="document-title">ORDEN DE PAGO: {{ $order->order_number }}</p>
                 <div class="document-meta">
-                    <div><strong>Fecha:</strong> {{ $order->created_at?->format('d/m/Y H:i') }}</div>
+                    <div><strong>Fecha:</strong> {{ format_datetime($order->created_at, false, true) }}</div>
                 </div>
             </td>
         </tr>
@@ -184,7 +184,8 @@
         <tr>
             <td>
                 <span class="label">Paciente</span>
-                <span class="value">{{ trim(($patient?->first_name ?? '') . ' ' . ($patient?->last_name ?? '')) ?: '-' }}</span>
+                <span
+                    class="value">{{ trim(($patient?->first_name ?? '') . ' ' . ($patient?->last_name ?? '')) ?: '-' }}</span>
             </td>
             <td>
                 <span class="label">Cédula</span>

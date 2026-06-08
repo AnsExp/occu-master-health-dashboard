@@ -4,19 +4,12 @@
 
 @section('content')
     @php
-        use App\Models\Permission;
+        use App\Enums\PermissionEnum;
 
-        $order_by = request('order', 'name');
-        $page = request('page', 1);
-        $direction = function ($order_by) {
-            $current_order = request('order');
-            $current_direction = request('direction', 'asc');
-            if ($current_order === $order_by) {
-                return $current_direction === 'asc' ? 'desc' : 'asc';
-            }
-            return 'asc';
-        };
-        $data = App\Models\User::orderBy($order_by, request('direction', 'asc'))->paginate(10);
+        $headers = [
+            ['label' => 'Nombre', 'href' => route('users', ['sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])],
+            ['label' => 'Correo', 'href' => route('users', ['sort' => 'email', 'direction' => $sort === 'email' && $direction === 'asc' ? 'desc' : 'asc'])]
+        ];
     @endphp
 
     <section class="mx-auto max-w-6xl py-6">
@@ -30,39 +23,37 @@
                 <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
                     {{ $data->total() }} registros
                 </span>
-                @if (Permission::has(Permission::WRITE_USERS))
-                <a href="{{ route('users.edit', ['user' => null]) }}" class="ml-4 rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-white">Crear</a>
-                @endif
+                @can(PermissionEnum::STORE_USERS->code())
+                    <a href="{{ route('users.create') }}"
+                        class="ml-4 rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">Crear</a>
+                @endcan
             </div>
         </div>
 
         @if (session('status'))
-           <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-               {{ session('status') }}
-           </div>
-       @endif
+            <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {{ session('status') }}
+            </div>
+        @endif
 
         <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
             <div class="overflow-x-auto">
                 <table class="w-full divide-y divide-gray-200 text-sm">
                     <thead class="bg-gray-50">
                         <tr>
-                            @foreach ([
-                                ['label' => 'Nombre','href'=>route('users', ['order' => 'name', 'direction' => $direction('name'), 'page' => $page,])],
-                                ['label' => 'Correo','href'=>route('users', ['order' => 'email', 'direction' => $direction('email'), 'page' => $page,])],
-                            ] as $link)
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
-                                    <a href="{{ $link['href'] }}"
-                                        class="w-full h-full inline-block items-center">
+                            @foreach ($headers as $link)
+                                <th scope="col" class="text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
+                                    <a href="{{ $link['href'] }}" class="w-full h-full px-4 py-3 inline-block">
                                         {{ $link['label'] }}
                                     </a>
                                 </th>
                             @endforeach
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Rol</th>
-                            @if (Permission::has([Permission::WRITE_USERS, Permission::ERASE_USERS]))
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600"></th>
-                            @endif
+                            <th scope="col"
+                                class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Rol
+                            </th>
+                            <th scope="col"
+                                class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-600">Acciones
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
@@ -75,20 +66,23 @@
                                     {{ $user->email }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-gray-700">
-                                    {{ implode(', ', array_map(fn($role)=> App\Enums\RoleEnum::fromCode($role)->label(), $user->getRoleNames()->toArray())) }}
+                                    {{ App\Enums\RoleEnum::fromCode($user->roles->first()?->name ?? '')?->label() ?? 'N/A' }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-gray-700">
                                     <div class="flex items-center gap-4 justify-end">
-                                        @if (Permission::has(Permission::WRITE_USERS))
-                                            <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="text-gray-700 hover:underline">Detalles</a>
-                                        @endif
-                                        @if (Permission::has(Permission::ERASE_USERS))
-                                            <form action="{{ route('users.destroy', ['user' => $user->id]) }}" method="POST" class="inline">
+                                        @can(PermissionEnum::UPDATE_USERS->code())
+                                            <a href="{{ route('users.edit', ['user' => $user->id]) }}"
+                                                class="text-gray-700 hover:underline">Detalles</a>
+                                        @endcan
+                                        @can(PermissionEnum::DESTROY_USERS->code())
+                                            <form action="{{ route('users.destroy', ['user' => $user->id]) }}" method="POST"
+                                                class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:underline cursor-pointer">Eliminar</button>
+                                                <button type="submit"
+                                                    class="text-red-600 hover:underline cursor-pointer">Eliminar</button>
                                             </form>
-                                        @endif
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

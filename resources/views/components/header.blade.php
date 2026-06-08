@@ -1,16 +1,20 @@
 @php
-    use App\Models\Permission;
+    use App\Enums\PermissionEnum;
+    use App\Enums\RoleEnum;
 
     $currentUrl = url()->current();
+
     $items = [
-        ['label' => 'Inicio', 'href' => route('home'), 'active' => $currentUrl === route('home'), 'allow' => true],
-        ['label' => 'Planes', 'href' => route('plans'), 'active' => $currentUrl === route('plans'), 'allow' => Permission::has(Permission::READ_PLANS)],
-        ['label' => 'Órdenes', 'href' => route('orders'), 'active' => $currentUrl === route('orders'), 'allow' => Permission::has(Permission::READ_ORDERS)],
-        ['label' => 'Usuarios', 'href' => route('users'), 'active' => $currentUrl === route('users'), 'allow' => Permission::has(Permission::READ_USERS)],
-        ['label' => 'Pacientes', 'href' => route('patients'), 'active' => $currentUrl === route('patients'), 'allow' => Permission::has(Permission::READ_PATIENTS)],
-        ['label' => 'Formularios', 'href' => route('forms'), 'active' => $currentUrl === route('forms'), 'allow' => auth()->check()],
+        ['label' => 'Inicio', 'href' => route('home'), 'active' => request()->is('/'), 'allow' => true],
+        ['label' => 'Planes', 'href' => route('plans'), 'active' => request()->is('plans') || request()->is('plans/*'), 'allow' => PermissionEnum::can(PermissionEnum::VIEW_PLANS)],
+        ['label' => 'Órdenes', 'href' => route('orders'), 'active' => request()->is('orders') || request()->is('orders/*'), 'allow' => PermissionEnum::can(PermissionEnum::VIEW_ORDERS)],
+        ['label' => 'Usuarios', 'href' => route('users'), 'active' => request()->is('users') || request()->is('users/*'), 'allow' => PermissionEnum::can(PermissionEnum::VIEW_USERS)],
+        ['label' => 'Pacientes', 'href' => route('patients'), 'active' => request()->is('patients') || request()->is('patients/*'), 'allow' => PermissionEnum::can(PermissionEnum::VIEW_PATIENTS)],
+        ['label' => 'Certificados', 'href' => route('certificates'), 'active' => request()->is('certificates') || request()->is('certificates/*'), 'allow' => auth()->check() ? auth()->user()->hasRole(RoleEnum::ADMINISTRATOR->code()) : false],
+        ['label' => 'Formularios', 'href' => route('forms'), 'active' => request()->is('forms') || request()->is('forms/*'), 'allow' => auth()->check()],
+        ['label' => 'Auditoría', 'href' => route('audit.index'), 'active' => request()->is('audit') || request()->is('audit/*'), 'allow' => PermissionEnum::can(PermissionEnum::VIEW_LOGS)],
         ['label' => 'Cerrar sesión', 'href' => route('logout'), 'active' => false, 'allow' => auth()->check()],
-        ['label' => 'Iniciar sesión', 'href' => route('login'), 'active' => $currentUrl === route('login'), 'allow' => !auth()->check()],
+        ['label' => 'Iniciar sesión', 'href' => route('login'), 'active' => request()->is('login') || request()->is('login/*'), 'allow' => !auth()->check()],
     ];
 @endphp
 
@@ -42,7 +46,8 @@
     <div class="mb-6">
         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Navegación</p>
         <h2 class="mt-2 text-lg font-semibold text-slate-900">
-            {{ auth()->check() ? auth()->user()->name : 'OccuMaster Health' }}</h2>
+            {{ auth()->check() ? auth()->user()->name : 'OccuMaster Health' }}
+        </h2>
     </div>
 
     <nav class="space-y-2">

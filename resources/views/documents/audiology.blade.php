@@ -102,9 +102,10 @@
 
 <body>
     @php
+        use App\Enums\SpecialtyEnum;
         \Carbon\Carbon::setLocale('es');
 
-        $patient = $certificate->patient;
+        $patient = $certificate->order->patient;
         $doctor = $certificate->doctor;
         $order = $certificate->order;
         $patientName = $patient ? trim(($patient->first_name ?? '') . ' ' . ($patient->last_name ?? '')) : 'N/D';
@@ -164,7 +165,7 @@
                 <td class="info-label">Médico responsable</td>
                 <td>{{ $doctorName !== '' ? $doctorName : 'N/D' }}</td>
                 <td class="info-label">Especialidad</td>
-                <td>{{ $doctor->specialty ?? 'N/D' }}</td>
+                <td>{{ SpecialtyEnum::fromCode($doctor->specialty->name)?->label() ?? 'N/D' }}</td>
             </tr>
         </tbody>
     </table>

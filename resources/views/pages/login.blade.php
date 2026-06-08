@@ -3,7 +3,7 @@
 @section('title', 'Inicio de Sesión')
 
 @section('content')
-    <div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="flex items-center justify-center bg-gray-50">
         <div class="w-full max-w-sm">
 
             {{-- Logo / Brand --}}
@@ -36,7 +36,7 @@
                         <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
                             autocomplete="email" placeholder="tu@correo.com"
                             class="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400
-                                   focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition">
+                                           focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition">
                     </div>
 
                     {{-- Contraseña --}}
@@ -52,7 +52,7 @@
                         <input id="password" type="password" name="password" required autocomplete="current-password"
                             placeholder="••••••••"
                             class="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400
-                                   focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition">
+                                           focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition">
                     </div>
 
                     {{-- Recordarme --}}
@@ -67,7 +67,7 @@
                     {{-- Botón --}}
                     <button type="submit"
                         class="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white
-                               hover:bg-gray-700 active:bg-gray-800 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                                       hover:bg-gray-700 active:bg-gray-800 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
                         Iniciar sesión
                     </button>
                 </form>

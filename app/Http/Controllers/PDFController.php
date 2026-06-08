@@ -20,7 +20,7 @@ class PDFController extends Controller
 
     private function document(string $view, Certificate $certificate, string $filename)
     {
-        $certificate->load(['patient', 'doctor', 'order']);
+        $certificate->load(['doctor', 'order']);
 
         $pdf = PDF::loadView($view, ['certificate' => $certificate]);
         $pdf->setPaper('A4', 'portrait');
@@ -28,6 +28,6 @@ class PDFController extends Controller
 
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="' . $filename . '-' . $certificate->id . '.pdf"');
+            ->header('Content-Disposition', 'inline; filename="' . $filename . '-' . $certificate->certificate_number . '.pdf"');
     }
 }

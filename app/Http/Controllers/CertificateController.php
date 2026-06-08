@@ -9,6 +9,9 @@ class CertificateController extends Controller
 {
     public function index()
     {
+        if (!request()->user()->can('viewAny', Certificate::class)) {
+            abort(403);
+        }
         $filters = [
             'patient_id_card' => request('patient_id_card', null),
             'certificate_number' => request('certificate_number', null),
@@ -17,11 +20,11 @@ class CertificateController extends Controller
         ];
 
         // Query base
-        $query = Certificate::with('patient');
+        $query = Certificate::with('order.patient');
 
         // Filtro por cédula del paciente
         if ($filters['patient_id_card']) {
-            $query->whereHas('patient', function ($q) use ($filters) {
+            $query->whereHas('order.patient', function ($q) use ($filters) {
                 $q->where('id_card', 'like', "%{$filters['patient_id_card']}%");
             });
         }
@@ -35,7 +38,7 @@ class CertificateController extends Controller
         if ($filters['start_date'] && $filters['end_date']) {
             // Ambas fechas (between inclusive)
             $query->whereDate('created_at', '>=', $filters['start_date'])
-                  ->whereDate('created_at', '<=', $filters['end_date']);
+                ->whereDate('created_at', '<=', $filters['end_date']);
         } elseif ($filters['start_date']) {
             // Solo desde
             $query->whereDate('created_at', '>=', $filters['start_date']);
@@ -44,31 +47,19 @@ class CertificateController extends Controller
             $query->whereDate('created_at', '<=', $filters['end_date']);
         }
 
-        // Ejecutar query con paginación
-        $perPage = 10;
-        $certificatesPaginated = $query->orderByDesc('created_at')->paginate($perPage);
-
-        // Formatear resultados
-        $certificates = $certificatesPaginated->getCollection()->map(function ($cert) {
-            return [
-                'number' => $cert->id,
-                'title' => $cert->title,
-                'patient' => $cert->patient ? $cert->patient->first_name . ' ' . $cert->patient->last_name : 'N/A',
-                'id_card' => $cert->patient ? $cert->patient->id_card : 'N/A',
-                'issued_at' => $cert->created_at->format('Y-m-d'),
-            ];
-        });
-
-        $certificatesPaginated->setCollection($certificates);
+        $certificates = $query->orderByDesc('created_at')->paginate(10);
 
         return view('pages.certificate', [
             'filters' => $filters,
-            'certificates' => $certificatesPaginated,
+            'certificates' => $certificates,
         ]);
     }
 
     public function pdf(Certificate $certificate)
     {
+        if (!request()->user()->can('view', $certificate)) {
+            abort(403);
+        }
         $certificate->loadMissing('patient');
 
         $pdf = PDF::loadView('pdf.certificate', ['certificate' => $certificate]);
@@ -78,5 +69,15 @@ class CertificateController extends Controller
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="' . $certificate->id . '.pdf"');
+    }
+
+    private function generate_number()
+    {
+        $number = mt_rand(1000000, 9999999);
+        $exists = Certificate::where('certificate_number', $number)->exists();
+        if ($exists) {
+            return $this->generate_number();
+        }
+        return $number;
     }
 }

@@ -3,7 +3,13 @@
 @section('title', 'Planes')
 
 @php
-    $data = App\Models\Plan::orderBy('name', 'asc')->paginate(10);
+    use App\Enums\PeriodicityEnum;
+    use App\Enums\PermissionEnum;
+
+    $headers = [
+        ['label' => 'Nombre', 'href' => route('plans', ['sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])],
+        ['label' => 'Precio', 'href' => route('plans', ['sort' => 'price', 'direction' => $sort === 'price' && $direction === 'asc' ? 'desc' : 'asc'])],
+    ];
 @endphp
 
 @section('content')
@@ -21,10 +27,12 @@
             </div>
             <div>
                 <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
-                    {{ count($data) }} registros
+                    {{ $data->total() }} registros
                 </span>
-                <a href="{{ route('plans.edit') }}"
-                    class="ml-4 rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-white">Crear</a>
+                @can (PermissionEnum::STORE_PLANS->code())
+                    <a href="{{ route('plans.create') }}"
+                        class="ml-4 rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white">Crear</a>
+                @endcan
             </div>
         </div>
 
@@ -33,14 +41,15 @@
                 <table class="w-full divide-y divide-gray-200 text-sm">
                     <thead class="bg-gray-50">
                         <tr>
-                            @foreach (['Nombre', 'Precio',] as $link)
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
-                                    {{ $link }}
+                            @foreach ($headers as $link)
+                                <th scope="col" class="text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
+                                    <a href="{{ $link['href'] }}" class="w-full h-full px-4 py-3 inline-block">
+                                        {{ $link['label'] }}
+                                    </a>
                                 </th>
                             @endforeach
                             <th scope="col"
-                                class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
+                                class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-600">Acciones
                             </th>
                         </tr>
                     </thead>
@@ -51,11 +60,13 @@
                                     {{ $plan->name }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-gray-700">
-                                    {{ $plan->price }} / {{ $plan->periodicity }}
+                                    {{ $plan->price }} / {{ PeriodicityEnum::fromCode($plan->periodicity)?->label() ?? 'N/D' }}
                                 </td>
-                                <td class="px-4 py-3 align-top text-gray-700">
-                                    <a href="{{ route('plans.edit', ['id' => $plan->id]) }}">Editar</a>
-                                </td>
+                                @can (PermissionEnum::UPDATE_PLANS->code())
+                                    <td class="px-4 py-3 align-top text-right text-gray-700">
+                                        <a href="{{ route('plans.edit', ['plan' => $plan->id]) }}" class="text-gray-700 hover:underline">Editar</a>
+                                    </td>
+                                @endcan
                             </tr>
                         @endforeach
                     </tbody>

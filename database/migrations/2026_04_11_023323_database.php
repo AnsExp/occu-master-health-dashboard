@@ -73,7 +73,7 @@ return new class extends Migration {
             $table->string('type')->nullable(false);
             $table->foreignId('order_id')->nullable(false)->constrained('orders')->cascadeOnDelete();
             $table->foreignId('doctor_id')->nullable(false)->constrained('doctors')->cascadeOnDelete();
-            $table->foreignId('patient_id')->nullable(false)->constrained('patients')->cascadeOnDelete();
+            $table->string('certificate_number')->unique()->nullable(false);
             $table->json('content')->nullable(false);
             $table->timestamps();
         });
@@ -81,9 +81,10 @@ return new class extends Migration {
             $table->id();
             $table->string('table_name', 100);
             $table->unsignedBigInteger('record_id');
+            $table->enum('level', ['info', 'warning', 'error', 'critical'])->default('info');
             $table->string('action', 50);
-            $table->json('changes')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->json('changes')->nullable(false);
+            $table->foreignId('user_id')->nullable(false)->constrained('users')->cascadeOnDelete();
             $table->string('ip_address', 45)->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();

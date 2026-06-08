@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\ActionEnum;
+use App\Enums\TableEnum;
+use App\Http\Controllers\AuditoryController;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -36,5 +39,34 @@ class User extends Authenticatable
     public function doctor()
     {
         return $this->hasOne(Doctor::class);
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            AuditoryController::info(
+                TableEnum::USERS,
+                ActionEnum::INSERT,
+                $user->id,
+                new_data: $user->toArray()
+            );
+        });
+        static::updating(function ($user) {
+            AuditoryController::info(
+                TableEnum::USERS,
+                ActionEnum::UPDATE,
+                $user->id,
+                old_data: $user->getOriginal(),
+                new_data: $user->getDirty()
+            );
+        });
+        static::deleted(function ($user) {
+            AuditoryController::info(
+                TableEnum::USERS,
+                ActionEnum::DELETE,
+                $user->id,
+                old_data: $user->toArray()
+            );
+        });
     }
 }

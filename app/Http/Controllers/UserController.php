@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PermissionEnum;
 use App\Enums\RoleEnum;
 use App\Enums\SpecialtyEnum;
 use App\Models\Doctor;
-use App\Models\Permission;
 use App\Models\Specialty;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,10 +15,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        if (!Permission::has(Permission::READ_USERS)) {
-            abort(403, 'No tienes permiso para acceder a esta página.');
+        if (!request()->user()->can('viewAny', User::class)) {
+            abort(403);
         }
-        return view('pages.users');
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+        $data = User::orderBy($sort, $direction)->paginate(10);
+        return view('pages.users', compact('data', 'sort', 'direction'));
     }
 
     private function storeUser(array $validated)
@@ -46,20 +49,20 @@ class UserController extends Controller
         switch ($validated['specialty']) {
             case SpecialtyEnum::AUDIOLOGY->code():
                 $user->givePermissionTo([
-                    Permission::READ_AUDIOLOGY,
-                    Permission::WRITE_AUDIOLOGY
+                    PermissionEnum::VIEW_AUDIOLOGY->code(),
+                    PermissionEnum::STORE_AUDIOLOGY->code()
                 ]);
                 break;
             case SpecialtyEnum::OCCUPATIONAL->code():
                 $user->givePermissionTo([
-                    Permission::READ_OCCUPATIONAL,
-                    Permission::WRITE_OCCUPATIONAL
+                    PermissionEnum::VIEW_OCCUPATIONAL->code(),
+                    PermissionEnum::STORE_OCCUPATIONAL->code()
                 ]);
                 break;
             case SpecialtyEnum::OPHTHALMOLOGY->code():
                 $user->givePermissionTo([
-                    Permission::READ_OPHTHALMOLOGY,
-                    Permission::WRITE_OPHTHALMOLOGY
+                    PermissionEnum::VIEW_OPHTHALMOLOGY->code(),
+                    PermissionEnum::STORE_OPHTHALMOLOGY->code()
                 ]);
                 break;
         }
@@ -70,7 +73,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        if (!Permission::has(Permission::WRITE_USERS)) {
+        if (!request()->user()->can('create', User::class)) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         $validated = $request->validate([
@@ -102,9 +105,17 @@ class UserController extends Controller
         return redirect()->route('users.edit', ['user' => $user])->with('status', 'Usuario registrado correctamente.');
     }
 
+    public function create()
+    {
+        if (!auth()->user()->can('create', User::class)) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
+        return view('forms.users', ['user' => null]);
+    }
+
     public function edit(User $user)
     {
-        if (!Permission::has(Permission::WRITE_USERS)) {
+        if (!request()->user()->can('update', $user)) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         if (!$user->exists) {
@@ -142,7 +153,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if (!Permission::has(Permission::WRITE_USERS)) {
+        if (!request()->user()->can('delete', $user)) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         $user->delete();

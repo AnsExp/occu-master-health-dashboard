@@ -7,6 +7,7 @@ enum RoleEnum
     case DOCTOR;
     case RECEPTIONIST;
     case ADMINISTRATOR;
+    case ORDER_READER;
 
     public function code(): string
     {
@@ -19,6 +20,7 @@ enum RoleEnum
             self::DOCTOR => 'Doctor',
             self::RECEPTIONIST => 'Recepcionista',
             self::ADMINISTRATOR => 'Administrador',
+            self::ORDER_READER => 'Order Reader',
             default => '',
         };
     }
@@ -29,6 +31,7 @@ enum RoleEnum
             'doctor' => self::DOCTOR,
             'receptionist' => self::RECEPTIONIST,
             'administrator' => self::ADMINISTRATOR,
+            'order_reader' => self::ORDER_READER,
             default => null,
         };
     }

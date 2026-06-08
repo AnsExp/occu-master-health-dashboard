@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AudiologyController;
+use App\Http\Controllers\AuditoryController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\FormController;
@@ -31,35 +32,40 @@ Route::get('/login', [AuthenticationController::class, 'login'])->name('login');
 Route::get('/logout', [AuthenticationController::class, 'logout'])->name('logout');
 Route::post('/login', [AuthenticationController::class, 'authenticate'])->name('login.authenticate');
 
-Route::get('/users', [UserController::class, 'index'])->name('users');
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
-Route::get('/users/edit/{user?}', [UserController::class, 'edit'])->name('users.edit');
-Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-Route::patch('/users/profile/{user}', [UserController::class, 'updateProfile'])->name('users.update.profile');
-Route::patch('/users/password/{user}', [UserController::class, 'updatePassword'])->name('users.update.password');
+Route::get('/users', [UserController::class, 'index'])->middleware('auth')->name('users');
+Route::post('/users', [UserController::class, 'store'])->middleware('auth')->name('users.store');
+Route::get('/users/create', [UserController::class, 'create'])->middleware('auth')->name('users.create');
+Route::get('/users/edit/{user}', [UserController::class, 'edit'])->middleware('auth')->name('users.edit');
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->middleware('auth')->name('users.destroy');
+Route::patch('/users/profile/{user}', [UserController::class, 'updateProfile'])->middleware('auth')->name('users.update.profile');
+Route::patch('/users/password/{user}', [UserController::class, 'updatePassword'])->middleware('auth')->name('users.update.password');
 
-Route::get('/plans', [PlanController::class, 'index'])->name('plans');
-Route::get('/plans/edit/{plan?}', [PlanController::class, 'edit'])->name('plans.edit');
-Route::get('/plans/json', [PlanController::class, 'json'])->name('plans.json');
-Route::post('/plans', [PlanController::class, 'store'])->name('plans.store');
-Route::put('/plans/{plan}', [PlanController::class, 'update'])->name('plans.update');
-Route::delete('/plans/{plan}', [PlanController::class, 'destroy'])->name('plans.destroy');
+Route::get('/plans', [PlanController::class, 'index'])->middleware('auth')->name('plans');
+Route::get('/plans/create', [PlanController::class, 'create'])->middleware('auth')->name('plans.create');
+Route::get('/plans/edit/{plan}', [PlanController::class, 'edit'])->middleware('auth')->name('plans.edit');
+Route::post('/plans', [PlanController::class, 'store'])->middleware('auth')->name('plans.store');
+Route::put('/plans/{plan}', [PlanController::class, 'update'])->middleware('auth')->name('plans.update');
+Route::delete('/plans/{plan}', [PlanController::class, 'destroy'])->middleware('auth')->name('plans.destroy');
+Route::get('/plans/json', [PlanController::class, 'json'])->middleware('auth')->name('plans.json');
 
-Route::get('/orders/edit', [OrderController::class, 'edit'])->name('orders.edit');
-Route::get('/orders/{order:order_number}', [OrderController::class, 'pdf'])->name('orders.pdf');
-Route::get('/orders', [OrderController::class, 'index'])->name('orders');
-Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+Route::get('/orders/create', [OrderController::class, 'create'])->middleware('auth')->name('orders.create');
+Route::get('/orders/{order:order_number}', [OrderController::class, 'pdf'])->middleware('auth')->name('orders.pdf');
+Route::get('/orders', [OrderController::class, 'index'])->middleware('auth')->name('orders');
+Route::post('/orders', [OrderController::class, 'store'])->middleware('auth')->name('orders.store');
 
-Route::get('/patients', [PatientController::class, 'index'])->name('patients');
+Route::get('/patients', [PatientController::class, 'index'])->middleware('auth')->name('patients');
 
-Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates');
+Route::get('/certificates', [CertificateController::class, 'index'])->middleware('auth')->name('certificates');
 
-Route::get('/forms', [FormController::class, 'index'])->name('forms');
-Route::get('/forms/audiology', [AudiologyController::class, 'index'])->name('form.audiology');
-Route::get('/forms/occupational', [OccupationalController::class, 'index'])->name('form.occupational');
-Route::get('/forms/ophthalmology', [OphthalmologyController::class, 'index'])->name('form.ophthalmology');
-Route::post('/forms/audiology', [AudiologyController::class, 'store'])->name('form.audiology.store');
-Route::post('/forms/occupational', [OccupationalController::class, 'store'])->name('form.occupational.store');
-Route::post('/forms/ophthalmology', [OphthalmologyController::class, 'store'])->name('form.ophthalmology.store');
+Route::get('/forms', [FormController::class, 'index'])->middleware('auth')->name('forms');
+Route::get('/forms/audiology', [AudiologyController::class, 'create'])->middleware('auth')->name('form.audiology');
+Route::get('/forms/occupational', [OccupationalController::class, 'create'])->middleware('auth')->name('form.occupational');
+Route::get('/forms/ophthalmology', [OphthalmologyController::class, 'create'])->middleware('auth')->name('form.ophthalmology');
+Route::post('/forms/audiology', [AudiologyController::class, 'store'])->middleware('auth')->name('form.audiology.store');
+Route::post('/forms/occupational', [OccupationalController::class, 'store'])->middleware('auth')->name('form.occupational.store');
+Route::post('/forms/ophthalmology', [OphthalmologyController::class, 'store'])->middleware('auth')->name('form.ophthalmology.store');
 
-Route::get('/documents/{certificate}', [PDFController::class, 'generate'])->name('certificates.pdf');
+Route::get('/documents/{certificate:certificate_number}', [PDFController::class, 'generate'])->middleware('auth')->name('certificates.pdf');
+
+Route::get('/audit', [AuditoryController::class, 'index'])->middleware('auth')->name('audit.index');
+Route::get('/audit/{log}', [AuditoryController::class, 'detail'])->middleware('auth')->name('audit.detail');

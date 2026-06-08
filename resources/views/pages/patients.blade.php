@@ -3,18 +3,16 @@
 @section('title', 'Pacientes')
 
 @section('content')
+
     @php
-        $order_by = request('order', 'first_name');
-        $page = request('page', 1);
-        $direction = function ($order_by) {
-            $current_order = request('order');
-            $current_direction = request('direction', 'asc');
-            if ($current_order === $order_by) {
-                return $current_direction === 'asc' ? 'desc' : 'asc';
-            }
-            return 'asc';
-        };
-        $data = App\Models\Patient::orderBy($order_by, request('direction', 'asc'))->paginate(10);
+        $headers = [
+            ['label' => 'Paciente', 'href' => route('patients', ['sort' => 'first_name', 'direction' => $sort === 'first_name' && $direction === 'asc' ? 'desc' : 'asc'])],
+            ['label' => 'Cédula', 'href' => route('patients', ['sort' => 'id_card', 'direction' => $sort === 'id_card' && $direction === 'asc' ? 'desc' : 'asc'])],
+            ['label' => 'Género', 'href' => route('patients', ['sort' => 'gender', 'direction' => $sort === 'gender' && $direction === 'asc' ? 'desc' : 'asc'])],
+            ['label' => 'Nacimiento', 'href' => route('patients', ['sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc'])],
+            ['label' => 'Correo', 'href' => route('patients', ['sort' => 'email', 'direction' => $sort === 'email' && $direction === 'asc' ? 'desc' : 'asc'])],
+            ['label' => 'Teléfono', 'href' => route('patients', ['sort' => 'phone', 'direction' => $sort === 'phone' && $direction === 'asc' ? 'desc' : 'asc'])],
+        ];
     @endphp
 
     <section class="mx-auto max-w-6xl py-6">
@@ -24,7 +22,7 @@
                 <p class="mt-1 text-sm text-gray-500">Listado general de pacientes registrados en el sistema.</p>
             </div>
             <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
-                {{ count($data) }} registros
+                {{ $data->total() }} registros
             </span>
         </div>
 
@@ -33,23 +31,17 @@
                 <table class="w-full divide-y divide-gray-200 text-sm">
                     <thead class="bg-gray-50">
                         <tr>
-                            @foreach ([
-                                ['label' => 'Paciente','href'=>route('patients', ['order' => 'first_name', 'direction' => $direction('first_name'), 'page' => $page,])],
-                                ['label' => 'Cédula','href'=>route('patients', ['order' => 'id_card', 'direction' => $direction('id_card'), 'page' => $page,])],
-                                ['label' => 'Género','href'=>route('patients', ['order' => 'gender', 'direction' => $direction('gender'), 'page' => $page,])],
-                                ['label' => 'Nacimiento','href'=>route('patients', ['order' => 'date_of_birth', 'direction' => $direction('date_of_birth'), 'page' => $page,])],
-                                ['label' => 'Correo','href'=>route('patients', ['order' => 'email', 'direction' => $direction('email'), 'page' => $page,])],
-                                ['label' => 'Teléfono','href'=>route('patients', ['order' => 'phone', 'direction' => $direction('phone'), 'page' => $page,])],
-                            ] as $link)
+                            @foreach ($headers as $link)
                                 <th scope="col"
                                     class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
-                                    <a href="{{ $link['href'] }}"
-                                        class="w-full h-full inline-block items-center">
+                                    <a href="{{ $link['href'] }}" class="w-full h-full px-4 py-3 inline-block">
                                         {{ $link['label'] }}
                                     </a>
                                 </th>
-                                @endforeach
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600"></th>
+                            @endforeach
+                            <th scope="col"
+                                class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-600">Acciones
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
@@ -65,7 +57,7 @@
                                     {{ App\Enums\GenderEnum::fromCode($patient->gender)?->label() ?? 'Desconocido' }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-gray-700">
-                                    {{ $patient->birth_date->format('F d, Y') }}
+                                    {{ format_datetime($patient->birth_date) }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-gray-700">
                                     {{ $patient->email }}
@@ -73,8 +65,8 @@
                                 <td class="px-4 py-3 align-top text-gray-700">
                                     {{ $patient->phone }}
                                 </td>
-                                <td class="px-4 py-3 align-top text-gray-700">
-                                    <a href="#">Historial</a>
+                                <td class="px-4 py-3 align-top text-right text-gray-700">
+                                    <a href="{{ route('certificates', ['patient_id_card' => $patient->id_card]) }}" class="text-gray-700 hover:underline">Certificados</a>
                                 </td>
                             </tr>
                         @endforeach

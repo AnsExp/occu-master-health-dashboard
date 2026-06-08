@@ -164,10 +164,11 @@
                     </div>
                 </form>
             @else
-                <p class="text-sm text-gray-500">Ingrese un número de orden válido para mostrar el formulario.</p>
-            @endif
-            @if (session('error'))
-                <p class="text-sm text-red-500">{{ session('error') }}</p>
+                @if (session('error'))
+                    <p class="text-sm text-red-500">{{ session('error') }}</p>
+                @else
+                    <p class="text-sm text-gray-500">Ingrese un número de orden válido para mostrar el formulario.</p>
+                @endif
             @endif
         </div>
     </section>
