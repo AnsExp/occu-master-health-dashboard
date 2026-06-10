@@ -3,8 +3,6 @@
 @section('title', 'Formulario de salud ocupacional')
 
 @php
-    use App\Enums\PermissionEnum;
-
     $declarationQuestionsPart1 = [
         'Problemas de los ojos visión',
         'Presión arterial alta',
@@ -69,6 +67,15 @@
 
         <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
             @if ($order)
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form class="space-y-5" method="POST" action="{{ route('form.occupational.store') }}">
                     @csrf
                     @method('POST')
@@ -99,7 +106,7 @@
                                 <option value="" selected disabled>Selecciona un médico</option>
                                 @foreach (App\Models\User::role(App\Enums\RoleEnum::DOCTOR->code())->get() as $doctor)
                                     <option value="{{ $doctor->doctor->id }}">{{ $doctor->name }}
-                                        ({{ $doctor->doctor?->specialty ?? 'Sin especialidad' }})</option>
+                                        ({{ $doctor->doctor?->specialty->name ?? 'Sin especialidad' }})</option>
                                 @endforeach
                             </select>
                             <p class="mt-1 text-xs text-gray-500">Escoja al médico responsable de la orden.</p>
@@ -129,22 +136,20 @@
                             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach ($declarationQuestionsPart1 as $index => $question)
                                     <div class="rounded-lg border border-gray-200 bg-white p-3">
-                                        <input type="hidden" name="medical_exam[declarations][0][questions][{{ $index }}][text]"
+                                        <input type="hidden" name="medical_exam[declarations][0][questions][{{ $index }}][test]"
                                             value="{{ $question }}" />
                                         <p class="text-sm font-medium leading-5 text-gray-800">{{ $question }} <span
                                                 class="text-red-600">*</span></p>
                                         <div class="mt-3 flex items-center gap-4">
                                             <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                                <input type="radio"
-                                                    name="medical_exam[declarations][0][questions][{{ $index }}][value]"
-                                                    value="true" required
+                                                <input type="radio" value="1"
+                                                    name="medical_exam[declarations][0][questions][{{ $index }}][value]" required
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                                 Sí
                                             </label>
                                             <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                                <input type="radio"
-                                                    name="medical_exam[declarations][0][questions][{{ $index }}][value]"
-                                                    value="false" required
+                                                <input type="radio" value="0"
+                                                    name="medical_exam[declarations][0][questions][{{ $index }}][value]" required
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                                 No
                                             </label>
@@ -161,27 +166,27 @@
                             cualquiera de las preguntas anteriores fue «sí», sírvase dar detalles.</label>
                         <textarea
                             class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
-                            name="medical_exam[declarations][0][aclarations]" id="if-yes-questions-part-1" rows="5"></textarea>
+                            name="medical_exam[declarations][0][aclarations]" rows="5"></textarea>
                     </div>
 
                     <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-4 sm:p-5">
                         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                             @foreach ($declarationQuestionsPart2 as $index => $question)
                                 <div class="rounded-lg border border-gray-200 bg-white p-3">
-                                    <input type="hidden" name="medical_exam[declarations][1][questions][{{ $index }}][text]"
+                                    <input type="hidden" name="medical_exam[declarations][1][questions][{{ $index }}][test]"
                                         value="{{ $question }}" />
                                     <p class="text-sm font-medium leading-5 text-gray-800">{{ $question }} <span
                                             class="text-red-600">*</span></p>
                                     <div class="mt-3 flex items-center gap-4">
                                         <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                             <input type="radio" name="medical_exam[declarations][1][questions][{{ $index }}][value]"
-                                                value="true" required
+                                                value="1" required
                                                 class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             Sí
                                         </label>
                                         <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                             <input type="radio" name="medical_exam[declarations][1][questions][{{ $index }}][value]"
-                                                value="false" required
+                                                value="0" required
                                                 class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             No
                                         </label>
@@ -197,27 +202,27 @@
                             cualquiera de las preguntas anteriores fue «sí», sírvase dar detalles.</label>
                         <textarea
                             class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
-                            name="medical_exam[declarations][1][aclarations]" id="if-yes-questions-part-2" rows="5"></textarea>
+                            name="medical_exam[declarations][1][aclarations]" rows="5"></textarea>
                     </div>
 
                     <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-4 sm:p-5">
                         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                             @foreach ($declarationQuestionsPart3 as $index => $question)
                                 <div class="rounded-lg border border-gray-200 bg-white p-3">
-                                    <input type="hidden" name="medical_exam[declarations][2][questions][{{ $index }}][text]"
+                                    <input type="hidden" name="medical_exam[declarations][2][questions][{{ $index }}][test]"
                                         value="{{ $question }}" />
                                     <p class="text-sm font-medium leading-5 text-gray-800">{{ $question }} <span
                                             class="text-red-600">*</span></p>
                                     <div class="mt-3 flex items-center gap-4">
                                         <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                             <input type="radio" name="medical_exam[declarations][2][questions][{{ $index }}][value]"
-                                                value="true" required
+                                                value="1" required
                                                 class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             Sí
                                         </label>
                                         <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                             <input type="radio" name="medical_exam[declarations][2][questions][{{ $index }}][value]"
-                                                value="false" required
+                                                value="0" required
                                                 class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             No
                                         </label>
@@ -225,7 +230,15 @@
                                 </div>
                             @endforeach
                         </div>
-                        <input type="hidden" name="medical_exam[declarations][2][aclarations]" value="" />
+                        <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-4 sm:p-5">
+                            <label class="mb-3 flex items-center justify-between gap-3 text-xs font-medium text-gray-500">Si la
+                                respuesta a
+                                cualquiera de las preguntas anteriores fue «sí», sírvase dar detalles.</label>
+                            <textarea
+                                class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
+                                name="medical_exam[declarations][2][aclarations]"
+                                rows="5"></textarea>
+                        </div>
                     </div>
 
                     <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-700">
@@ -369,13 +382,13 @@
                                                     <td class="border border-gray-200 text-center">
                                                         <input required type="radio"
                                                             name="medical_exam[clinical_data][checks][{{ $checkIndex }}][result]"
-                                                            value="Normal"
+                                                            value="normal"
                                                             class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                                     </td>
                                                     <td class="border border-gray-200 text-center">
                                                         <input required type="radio"
                                                             name="medical_exam[clinical_data][checks][{{ $checkIndex }}][result]"
-                                                            value="Anormal"
+                                                            value="abnormal"
                                                             class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                                     </td>
                                                 </tr>
@@ -401,19 +414,20 @@
                                 <div class="flex items-center gap-2">
                                     <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                         <input required type="radio" name="medical_exam[clinical_data][chest_xray][status]"
-                                            value="Se hizo" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                            value="was_done"
+                                            class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                         Se hizo
                                     </label>
                                     <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                         <input required type="radio" name="medical_exam[clinical_data][chest_xray][status]"
-                                            value="No se hizo"
+                                            value="not_done"
                                             class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                         No se hizo
                                     </label>
                                 </div>
                                 <label for="clinical-chest-xray-date" class="text-sm font-medium text-gray-700">Fecha</label>
                                 <input required id="clinical-chest-xray-date"
-                                    name="medical_exam[clinical_data][chest_xray][date]" type="date"
+                                    name="medical_exam[clinical_data][chest_xray][date]" type="date" min="{{ date('Y-m-d') }}"
                                     class="w-full rounded border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800" />
                             </div>
 
@@ -461,12 +475,12 @@
                                             </td>
                                             <td class="border border-gray-200 text-center">
                                                 <input required type="radio"
-                                                    name="medical_exam[other_tests][{{ $loop->index }}][status]" value="Normal"
+                                                    name="medical_exam[other_tests][{{ $loop->index }}][status]" value="normal"
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             </td>
                                             <td class="border border-gray-200 text-center">
                                                 <input required type="radio"
-                                                    name="medical_exam[other_tests][{{ $loop->index }}][status]" value="Anormal"
+                                                    name="medical_exam[other_tests][{{ $loop->index }}][status]" value="abnormal"
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             </td>
                                             <td class="border border-gray-200 p-1.5">
@@ -541,13 +555,13 @@
                             <span class="text-sm font-medium text-gray-700">Apto para el servicio de vigía</span>
                             <div class="flex flex-wrap items-center gap-6 rounded-lg border border-gray-200 bg-white px-3 py-2">
                                 <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                    <input required type="radio" name="medical_exam[aptitude_eval][watchkeeping]" value="Apto"
+                                    <input required type="radio" name="medical_exam[aptitude_eval][watchkeeping]" value="fit"
                                         class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                     Apto
                                 </label>
                                 <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                    <input required type="radio" name="medical_exam[aptitude_eval][watchkeeping]"
-                                        value="No apto" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                    <input required type="radio" name="medical_exam[aptitude_eval][watchkeeping]" value="unfit"
+                                        class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                     No apto
                                 </label>
                             </div>
@@ -584,8 +598,7 @@
                                                     value="{{ $label }}" />
                                                 <input required type="radio"
                                                     name="medical_exam[aptitude_eval][service_matrix][{{ $index }}][result]"
-                                                    value="Apto"
-                                                    class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                                    value="fit" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             </td>
                                         @endforeach
                                     </tr>
@@ -595,7 +608,7 @@
                                             <td class="border border-gray-200 text-center">
                                                 <input required type="radio"
                                                     name="medical_exam[aptitude_eval][service_matrix][{{ $index }}][result]"
-                                                    value="No apto"
+                                                    value="unfit"
                                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                             </td>
                                         @endforeach
@@ -607,12 +620,12 @@
                         <div class="grid gap-3 sm:grid-cols-2">
                             <div class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2">
                                 <span class="text-sm font-medium text-gray-700">Sin restricciones</span>
-                                <input required type="radio" name="medical_exam[aptitude_eval][restrictions]" value="false"
+                                <input required type="radio" name="medical_exam[aptitude_eval][restrictions]" value="0"
                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                             </div>
                             <div class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2">
                                 <span class="text-sm font-medium text-gray-700">Con restricciones</span>
-                                <input required type="radio" name="medical_exam[aptitude_eval][restrictions]" value="true"
+                                <input required type="radio" name="medical_exam[aptitude_eval][restrictions]" value="1"
                                     class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                             </div>
                         </div>
@@ -639,18 +652,18 @@
                         </div>
 
                         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-[280px_1fr] lg:items-center">
-                            <span class="text-sm font-medium text-gray-700">Obligación de llevar lentes correctores</span>
+                            <span class="text-sm font-medium text-gray-700">Obligación de llevar lentes correctores <span
+                                    class="text-red-500">*</span></span>
                             <div class="flex flex-wrap items-center gap-6 rounded-lg border border-gray-200 bg-white px-3 py-2">
                                 <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                     <input required type="radio" name="medical_exam[aptitude_eval][corrective_lenses]"
-                                        value="true" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                        value="1" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                     Sí
                                 </label>
                                 <label class="inline-flex items-center gap-2 text-sm text-gray-700">
                                     <input required type="radio" name="medical_exam[aptitude_eval][corrective_lenses]"
-                                        value="false" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
-                                    No
-                                </label>
+                                        value="0" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
+                                    No </label>
                             </div>
                         </div>
                     </div>

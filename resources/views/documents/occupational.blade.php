@@ -96,7 +96,7 @@
     @php
         \Carbon\Carbon::setLocale('es');
 
-        $patient = $certificate->patient;
+        $patient = $certificate->order->patient;
         $doctor = $certificate->doctor;
         $order = $certificate->order;
 
@@ -172,7 +172,7 @@
                 <td class="info-label">Médico responsable</td>
                 <td>{{ $doctorName !== '' ? $doctorName : 'N/D' }}</td>
                 <td class="info-label">Especialidad</td>
-                <td>{{ $doctor->specialty ?? 'N/D' }}</td>
+                <td>{{ $doctor->specialty->name ?? 'N/D' }}</td>
             </tr>
             <tr>
                 <td class="info-label">Orden</td>
@@ -200,7 +200,7 @@
                 @forelse ($questions as $question)
                     <tr>
                         <td class="center">{{ $blockIndex + 1 }}</td>
-                        <td>{{ $question['text'] ?? 'N/D' }}</td>
+                        <td>{{ $question['test'] ?? 'N/D' }}</td>
                         <td class="center">{{ $boolText($question['value'] ?? null) }}</td>
                     </tr>
                 @empty
@@ -212,7 +212,7 @@
                 <tr>
                     <td class="info-label center">{{ $blockIndex + 1 }}</td>
                     <td class="info-label">Aclaraciones</td>
-                    <td>{{ $fieldText($block['aclarations'] ?? null) }}</td>
+                    <td>{{ $fieldText(json_encode($block['aclarations'] ?? null)) }}</td>
                 </tr>
             @empty
                 <tr>
@@ -257,7 +257,7 @@
             </tr>
             <tr>
                 <td class="info-label">Radiografía de tórax</td>
-                <td>{{ $fieldText($clinicalData['chest_xray']['status'] ?? null) }}</td>
+                <td>{{ $fieldText($clinicalData['chest_xray']['status'] === 'was_done' ? 'Realizada' : 'No realizada') }}</td>
                 <td class="info-label">Fecha radiografía</td>
                 <td>{{ $fieldText($clinicalData['chest_xray']['date'] ?? null) }}</td>
                 <td class="info-label">Tipo</td>
@@ -345,7 +345,7 @@
         <tbody>
             <tr>
                 <td class="info-label" style="width: 25%;">Vigía</td>
-                <td style="width: 25%;">{{ $fieldText($aptitudeEval['watchkeeping'] ?? null) }}</td>
+                <td style="width: 25%;">{{ $fieldText($aptitudeEval['watchkeeping'] === 'fit' ? 'Apto' : 'No apto') }}</td>
                 <td class="info-label" style="width: 25%;">Restricciones</td>
                 <td style="width: 25%;">{{ $boolText($aptitudeEval['restrictions'] ?? null) }}</td>
             </tr>
@@ -373,7 +373,7 @@
             @forelse ($serviceMatrix as $service)
                 <tr>
                     <td>{{ $service['service'] ?? 'N/D' }}</td>
-                    <td class="center">{{ $fieldText($service['result'] ?? null) }}</td>
+                    <td class="center">{{ $fieldText($service['result'] === 'fit' ? 'Apto' : 'No apto') }}</td>
                 </tr>
             @empty
                 <tr>

@@ -1,361 +1,358 @@
 {
-  "declarations": [
-    {
-      "questions": [
-        {
-          "text": "Problemas de los ojos visi\u00f3n",
-          "value": "true"
-        },
-        {
-          "text": "Presi\u00f3n arterial alta",
-          "value": "false"
-        },
-        {
-          "text": "Enfermedades card\u00edacas \/ vasculares",
-          "value": "true"
-        },
-        {
-          "text": "Operaci\u00f3n de coraz\u00f3n",
-          "value": "false"
-        },
-        {
-          "text": "Venas varicosas \/ Hemorroides",
-          "value": "true"
-        },
-        {
-          "text": "Asma \/ Bronquitis",
-          "value": "false"
-        },
-        {
-          "text": "Trastornos de la sangre",
-          "value": "true"
-        },
-        {
-          "text": "Diabetes",
-          "value": "false"
-        },
-        {
-          "text": "Trastornos de la Tiroides",
-          "value": "true"
-        },
-        {
-          "text": "Problemas digestivos",
-          "value": "false"
-        },
-        {
-          "text": "Trastornos renales",
-          "value": "true"
-        },
-        {
-          "text": "Trastornos de la piel",
-          "value": "false"
-        },
-        {
-          "text": "Alergias",
-          "value": "true"
-        },
-        {
-          "text": "Enfermedades infecciosas\/contagiosas",
-          "value": "false"
-        },
-        {
-          "text": "Hernias",
-          "value": "true"
-        },
-        {
-          "text": "Problemas genitales",
-          "value": "false"
-        },
-        {
-          "text": "Embarazo",
-          "value": "true"
-        },
-        {
-          "text": "Problemas del sue\u00f1o",
-          "value": "false"
-        },
-        {
-          "text": "\u00bfFuma? \u00bfIngiere alcohol? \u00bfUsa drogas?",
-          "value": "true"
-        },
-        {
-          "text": "Operaciones \/ Cirug\u00eda",
-          "value": "false"
-        },
-        {
-          "text": "Epilepsia \/ crisis parciales",
-          "value": "true"
-        },
-        {
-          "text": "Mareos \/ desvanecimientos",
-          "value": "false"
-        },
-        {
-          "text": "P\u00e9rdida de la conciencia",
-          "value": "true"
-        },
-        {
-          "text": "Problemas psiqui\u00e1tricos",
-          "value": "false"
-        },
-        {
-          "text": "Depresi\u00f3n",
-          "value": "true"
-        },
-        {
-          "text": "Intento de suicidio",
-          "value": "false"
-        },
-        {
-          "text": "P\u00e9rdida de memoria",
-          "value": "true"
-        },
-        {
-          "text": "Fuertes dolores de cabeza",
-          "value": "false"
-        },
-        {
-          "text": "Problemas de o\u00eddo (audici\u00f3n, tinnitus)\/nariz, garganta",
-          "value": "true"
-        },
-        {
-          "text": "Limitaci\u00f3n de la movilidad",
-          "value": "false"
-        },
-        {
-          "text": "Problemas de la espalda o articulaciones",
-          "value": "true"
-        },
-        {
-          "text": "Amputaciones",
-          "value": "false"
-        },
-        {
-          "text": "Fracturas \/ dislocaciones",
-          "value": "true"
-        }
-      ],
-      "aclarations": "declaration 1"
-    },
-    {
-      "questions": [
-        {
-          "text": "\u00bfAlguna vez le han dado de baja por enfermedad o le han enviado a su pa\u00eds de origen estando embarcado?",
-          "value": "true"
-        },
-        {
-          "text": "\u00bfAlguna vez lo han hospitalizado?",
-          "value": "true"
-        },
-        {
-          "text": "\u00bfAlguna vez le han declarado no apto para el trabajo en el mar?",
-          "value": "true"
-        },
-        {
-          "text": "\u00bfAlguna vez le han impuesto limitaciones a su certificado m\u00e9dico o se lo han revocado?",
-          "value": "true"
-        },
-        {
-          "text": "\u00bfSabe si tiene alg\u00fan problema m\u00e9dico, dolencias, enfermedades?",
-          "value": "true"
-        },
-        {
-          "text": "\u00bfSe siente saludable y en condiciones para desempe\u00f1ar las tareas del puesto \/ ocupaci\u00f3n que se le han designado?",
-          "value": "true"
-        },
-        {
-          "text": "\u00bfEs al\u00e9rgico a alguna medicina?",
-          "value": "true"
-        }
-      ],
-      "aclarations": "declaration 2"
-    },
-    {
-      "questions": [
-        {
-          "text": "\u00bfEst\u00e1 tomando alguna medicina prescrita o que no requiere receta?",
-          "value": "true"
-        }
-      ],
-      "aclarations": null
-    }
-  ],
-  "clinical_data": {
-    "height": "1.70",
-    "weight": "85",
-    "pulse": "55",
-    "blood_pressure_systolic": "126",
-    "blood_pressure_diastolic": "84",
-    "emo": "No infeccioso",
-    "glucose": "normal",
-    "protein": "negativo",
-    "blood_type": "O+",
-    "checks": [
-      {
-        "test": "Cabeza",
-        "result": "Normal"
-      },
-      {
-        "test": "Senos paranasales, nariz, garganta",
-        "result": "Normal"
-      },
-      {
-        "test": "Boca \/ Dientes",
-        "result": "Normal"
-      },
-      {
-        "test": "O\u00eddos (general)",
-        "result": "Normal"
-      },
-      {
-        "test": "Membrana timp\u00e1nica",
-        "result": "Normal"
-      },
-      {
-        "test": "Ojos",
-        "result": "Normal"
-      },
-      {
-        "test": "Oftalmoscop\u00eda",
-        "result": "Normal"
-      },
-      {
-        "test": "Pupilas",
-        "result": "Normal"
-      },
-      {
-        "test": "Movimiento ocular",
-        "result": "Normal"
-      },
-      {
-        "test": "Pulmones y t\u00f3rax",
-        "result": "Normal"
-      },
-      {
-        "test": "Examen de mama",
-        "result": "Normal"
-      },
-      {
-        "test": "Coraz\u00f3n",
-        "result": "Anormal"
-      },
-      {
-        "test": "Piel",
-        "result": "Anormal"
-      },
-      {
-        "test": "Venas varicosas",
-        "result": "Anormal"
-      },
-      {
-        "test": "Vascular (inc. pulsos)",
-        "result": "Anormal"
-      },
-      {
-        "test": "Abdomen y v\u00edsceras",
-        "result": "Anormal"
-      },
-      {
-        "test": "Hernias",
-        "result": "Anormal"
-      },
-      {
-        "test": "Ano (excluye examen rectal)",
-        "result": "Anormal"
-      },
-      {
-        "test": "Sistema genitourinario",
-        "result": "Anormal"
-      },
-      {
-        "test": "Extremidades inferiores y superiores",
-        "result": "Anormal"
-      },
-      {
-        "test": "Columna vertebral",
-        "result": "Anormal"
-      },
-      {
-        "test": "Neurol\u00f3gico",
-        "result": "Anormal"
-      },
-      {
-        "test": "Psiqui\u00e1trico",
-        "result": "Anormal"
-      },
-      {
-        "test": "Apariencia general",
-        "result": "Anormal"
-      }
-    ],
-    "observations": "observation 1",
-    "chest_xray": {
-      "status": "Se hizo",
-      "date": "2026-05-27"
-    },
-    "result": "result 1"
-  },
-  "other_tests": [
-    {
-      "test": "Biometr\u00eda hem\u00e1tica",
-      "status": "Normal",
-      "detail": "normal"
-    },
-    {
-      "test": "Perfil lip\u00eddico",
-      "status": "Anormal",
-      "detail": "normal"
-    },
-    {
-      "test": "Qu\u00edmica sangu\u00ednea",
-      "status": "Normal",
-      "detail": "normal"
-    },
-    {
-      "test": "Perfil hep\u00e1tico",
-      "status": "Anormal",
-      "detail": "normal"
-    },
-    {
-      "test": "HIV",
-      "status": "Normal",
-      "detail": "normal"
-    }
-  ],
   "ecg": "trazado normal",
   "koh": "ninguno",
   "vdrl": "no reactivo",
   "copro": "normal",
-  "psychological_assessment": "psicologia 1",
-  "dental_assessment": "valoracion 1",
   "extra_tests": "ninguna",
+  "other_tests": [
+    {
+      "test": "Biometría hemática",
+      "detail": "normal",
+      "status": "normal"
+    },
+    {
+      "test": "Perfil lipídico",
+      "detail": "normal",
+      "status": "normal"
+    },
+    {
+      "test": "Química sanguínea",
+      "detail": "normal",
+      "status": "normal"
+    },
+    {
+      "test": "Perfil hepático",
+      "detail": "normal",
+      "status": "normal"
+    },
+    {
+      "test": "HIV",
+      "detail": "normal",
+      "status": "normal"
+    }
+  ],
+  "declarations": [
+    {
+      "questions": [
+        {
+          "test": "Problemas de los ojos visión",
+          "value": "1"
+        },
+        {
+          "test": "Presión arterial alta",
+          "value": "1"
+        },
+        {
+          "test": "Enfermedades cardíacas / vasculares",
+          "value": "1"
+        },
+        {
+          "test": "Operación de corazón",
+          "value": "1"
+        },
+        {
+          "test": "Venas varicosas / Hemorroides",
+          "value": "1"
+        },
+        {
+          "test": "Asma / Bronquitis",
+          "value": "1"
+        },
+        {
+          "test": "Trastornos de la sangre",
+          "value": "1"
+        },
+        {
+          "test": "Diabetes",
+          "value": "1"
+        },
+        {
+          "test": "Trastornos de la Tiroides",
+          "value": "1"
+        },
+        {
+          "test": "Problemas digestivos",
+          "value": "1"
+        },
+        {
+          "test": "Trastornos renales",
+          "value": "1"
+        },
+        {
+          "test": "Trastornos de la piel",
+          "value": "1"
+        },
+        {
+          "test": "Alergias",
+          "value": "1"
+        },
+        {
+          "test": "Enfermedades infecciosas/contagiosas",
+          "value": "1"
+        },
+        {
+          "test": "Hernias",
+          "value": "1"
+        },
+        {
+          "test": "Problemas genitales",
+          "value": "1"
+        },
+        {
+          "test": "Embarazo",
+          "value": "1"
+        },
+        {
+          "test": "Problemas del sueño",
+          "value": "1"
+        },
+        {
+          "test": "¿Fuma? ¿Ingiere alcohol? ¿Usa drogas?",
+          "value": "1"
+        },
+        {
+          "test": "Operaciones / Cirugía",
+          "value": "1"
+        },
+        {
+          "test": "Epilepsia / crisis parciales",
+          "value": "1"
+        },
+        {
+          "test": "Mareos / desvanecimientos",
+          "value": "1"
+        },
+        {
+          "test": "Pérdida de la conciencia",
+          "value": "1"
+        },
+        {
+          "test": "Problemas psiquiátricos",
+          "value": "1"
+        },
+        {
+          "test": "Depresión",
+          "value": "1"
+        },
+        {
+          "test": "Intento de suicidio",
+          "value": "1"
+        },
+        {
+          "test": "Pérdida de memoria",
+          "value": "1"
+        },
+        {
+          "test": "Fuertes dolores de cabeza",
+          "value": "1"
+        },
+        {
+          "test": "Problemas de oído (audición, tinnitus)/nariz, garganta",
+          "value": "1"
+        },
+        {
+          "test": "Limitación de la movilidad",
+          "value": "1"
+        },
+        {
+          "test": "Problemas de la espalda o articulaciones",
+          "value": "1"
+        },
+        {
+          "test": "Amputaciones",
+          "value": "1"
+        },
+        {
+          "test": "Fracturas / dislocaciones",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "questions": [
+        {
+          "test": "¿Alguna vez le han dado de baja por enfermedad o le han enviado a su país de origen estando embarcado?",
+          "value": "1"
+        },
+        {
+          "test": "¿Alguna vez lo han hospitalizado?",
+          "value": "1"
+        },
+        {
+          "test": "¿Alguna vez le han declarado no apto para el trabajo en el mar?",
+          "value": "1"
+        },
+        {
+          "test": "¿Alguna vez le han impuesto limitaciones a su certificado médico o se lo han revocado?",
+          "value": "1"
+        },
+        {
+          "test": "¿Sabe si tiene algún problema médico, dolencias, enfermedades?",
+          "value": "1"
+        },
+        {
+          "test": "¿Se siente saludable y en condiciones para desempeñar las tareas del puesto / ocupación que se le han designado?",
+          "value": "1"
+        },
+        {
+          "test": "¿Es alérgico a alguna medicina?",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "questions": [
+        {
+          "test": "¿Está tomando alguna medicina prescrita o que no requiere receta?",
+          "value": "1"
+        }
+      ]
+    }
+  ],
   "aptitude_eval": {
-    "watchkeeping": "Apto",
+    "observations": "observacion 5",
+    "restrictions": "0",
+    "watchkeeping": "fit",
     "service_matrix": [
       {
-        "service": "Servicio de cubierta",
-        "result": "Apto"
+        "result": "fit",
+        "service": "Servicio de cubierta"
       },
       {
-        "service": "Servicio de m\u00e1quinas",
-        "result": "No apto"
+        "result": "fit",
+        "service": "Servicio de máquinas"
       },
       {
-        "service": "Manipulaci\u00f3n de alimentos",
-        "result": "Apto"
+        "result": "fit",
+        "service": "Manipulación de alimentos"
       },
       {
-        "service": "Radiocomunicaciones",
-        "result": "No apto"
+        "result": "fit",
+        "service": "Radiocomunicaciones"
       },
       {
-        "service": "Otros",
-        "result": "Apto"
+        "result": "fit",
+        "service": "Otros"
       }
     ],
-    "restrictions": "false",
-    "restriction_description": "description 1",
-    "observations": "observation 1",
-    "corrective_lenses": "true"
-  }
+    "corrective_lenses": "1",
+    "restriction_description": "descripcion 1"
+  },
+  "clinical_data": {
+    "emo": "No infeccioso",
+    "pulse": "55",
+    "checks": [
+      {
+        "test": "Cabeza",
+        "result": "normal"
+      },
+      {
+        "test": "Senos paranasales, nariz, garganta",
+        "result": "normal"
+      },
+      {
+        "test": "Boca / Dientes",
+        "result": "normal"
+      },
+      {
+        "test": "Oídos (general)",
+        "result": "normal"
+      },
+      {
+        "test": "Membrana timpánica",
+        "result": "normal"
+      },
+      {
+        "test": "Ojos",
+        "result": "normal"
+      },
+      {
+        "test": "Oftalmoscopía",
+        "result": "normal"
+      },
+      {
+        "test": "Pupilas",
+        "result": "normal"
+      },
+      {
+        "test": "Movimiento ocular",
+        "result": "normal"
+      },
+      {
+        "test": "Pulmones y tórax",
+        "result": "normal"
+      },
+      {
+        "test": "Examen de mama",
+        "result": "normal"
+      },
+      {
+        "test": "Corazón",
+        "result": "normal"
+      },
+      {
+        "test": "Piel",
+        "result": "normal"
+      },
+      {
+        "test": "Venas varicosas",
+        "result": "normal"
+      },
+      {
+        "test": "Vascular (inc. pulsos)",
+        "result": "normal"
+      },
+      {
+        "test": "Abdomen y vísceras",
+        "result": "normal"
+      },
+      {
+        "test": "Hernias",
+        "result": "normal"
+      },
+      {
+        "test": "Ano (excluye examen rectal)",
+        "result": "normal"
+      },
+      {
+        "test": "Sistema genitourinario",
+        "result": "normal"
+      },
+      {
+        "test": "Extremidades inferiores y superiores",
+        "result": "normal"
+      },
+      {
+        "test": "Columna vertebral",
+        "result": "normal"
+      },
+      {
+        "test": "Neurológico",
+        "result": "normal"
+      },
+      {
+        "test": "Psiquiátrico",
+        "result": "normal"
+      },
+      {
+        "test": "Apariencia general",
+        "result": "normal"
+      }
+    ],
+    "height": "1.70",
+    "result": "resultados 1",
+    "weight": "85",
+    "glucose": "normal",
+    "protein": "negativo",
+    "blood_type": "O+",
+    "chest_xray": {
+      "date": "2026-06-10",
+      "status": "was_done"
+    },
+    "observations": "observacion 4",
+    "blood_pressure_systolic": "126",
+    "blood_pressure_diastolic": "84"
+  },
+  "dental_assessment": "valoracion 1",
+  "psychological_assessment": "psicologia 1"
 }

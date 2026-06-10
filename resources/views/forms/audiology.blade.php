@@ -14,6 +14,16 @@
         </div>
 
         <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @if ($order)
                 <form class="space-y-5" method="POST" action="{{ route('form.audiology.store') }}">
                     @csrf
@@ -51,9 +61,10 @@
                             <select id="responsible_doctor_id" name="doctor[id]" required
                                 class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800">
                                 <option value="" selected disabled>Selecciona un médico</option>
-                                @foreach (App\Models\User::role(App\Enums\RoleEnum::DOCTOR->code())->get() as $doctor)
-                                    <option value="{{ $doctor->doctor->id }}">{{ $doctor->name }}
-                                        ({{ $doctor->doctor?->specialty ?? 'Sin especialidad' }})</option>
+                                @foreach (App\Models\User::role(App\Enums\RoleEnum::DOCTOR->code())->get() as $user)
+                                    <option value="{{ $user->doctor->id }}">{{ $user->doctor->first_name }}
+                                        {{ $user->doctor->last_name }}
+                                        ({{ $user->doctor?->specialty?->name ?? 'Sin especialidad' }})</option>
                                 @endforeach
                             </select>
                             <p class="mt-1 text-xs text-gray-500">Escoja al médico responsable de la orden.</p>
@@ -134,17 +145,17 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach (['Amarillo', 'Verde', 'Rojo', 'Azul'] as $colorLabel)
+                                            @foreach (['yellow' => 'Amarillo', 'green' => 'Verde', 'red' => 'Rojo', 'blue' => 'Azul'] as $colorKey => $colorLabel)
                                                 <tr>
                                                     <td class="border border-gray-200 bg-gray-50 px-3 py-2 font-medium">
                                                         {{ $colorLabel }} <span class="text-red-600">*</span>
                                                     </td>
                                                     <td class="border border-gray-200 text-center"><input required type="radio"
-                                                            name="medical_exam[ishihara][{{ $colorLabel }}]" value="N"
+                                                            name="medical_exam[ishihara][{{ $colorKey }}]" value="N"
                                                             class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                                     </td>
                                                     <td class="border border-gray-200 text-center"><input required type="radio"
-                                                            name="medical_exam[ishihara][{{ $colorLabel }}]" value="CP"
+                                                            name="medical_exam[ishihara][{{ $colorKey }}]" value="CP"
                                                             class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" />
                                                     </td>
                                                 </tr>

@@ -162,7 +162,7 @@
                 <td class="info-label">Médico responsable</td>
                 <td>{{ $doctorName !== '' ? $doctorName : 'N/D' }}</td>
                 <td class="info-label">Especialidad</td>
-                <td>{{ $doctor->specialty ?? 'N/D' }}</td>
+                <td>{{ $doctor->specialty->name ?? 'N/D' }}</td>
             </tr>
         </tbody>
     </table>

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
 use App\Models\Plan;
 use App\Models\PlanDetail;
 use Illuminate\Http\Request;
