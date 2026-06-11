@@ -10,7 +10,7 @@
         </div>
 
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-            <x-search-order :url="route('form.audiology')" class="mt-6" />
+            <x-search-order :url="route('audiology.index')" class="mt-6" />
         </div>
 
         <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
@@ -23,9 +23,8 @@
                     </ul>
                 </div>
             @endif
-
-            @if ($order)
-                <form class="space-y-5" method="POST" action="{{ route('form.audiology.store') }}">
+            @if (isset($order) && $order)
+                <form class="space-y-5" method="POST" action="{{ route('audiology.store') }}">
                     @csrf
                     @method('POST')
 
@@ -64,7 +63,8 @@
                                 @foreach (App\Models\User::role(App\Enums\RoleEnum::DOCTOR->code())->get() as $user)
                                     <option value="{{ $user->doctor->id }}">{{ $user->doctor->first_name }}
                                         {{ $user->doctor->last_name }}
-                                        ({{ $user->doctor?->specialty?->name ?? 'Sin especialidad' }})</option>
+                                        ({{ $user->doctor?->specialty?->name ?? 'Sin especialidad' }})
+                                    </option>
                                 @endforeach
                             </select>
                             <p class="mt-1 text-xs text-gray-500">Escoja al médico responsable de la orden.</p>
@@ -175,8 +175,8 @@
                     </div>
                 </form>
             @else
-                @if (session('error'))
-                    <p class="text-sm text-red-500">{{ session('error') }}</p>
+                @if (isset($error))
+                    <p class="text-sm text-red-500">{{ $error }}</p>
                 @else
                     <p class="text-sm text-gray-500">Ingrese un número de orden válido para mostrar el formulario.</p>
                 @endif

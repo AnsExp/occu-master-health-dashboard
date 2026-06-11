@@ -4,17 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan;
 use App\Models\PlanDetail;
+use App\Policies\PlanPolicy;
 use Illuminate\Http\Request;
 
 class PlanController extends Controller
 {
+    private PlanPolicy $policy;
+
+    public function __construct()
+    {
+        $this->policy = new PlanPolicy();
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        if (!request()->user()->can('viewAny', Plan::class)) {
-            abort(403);
+        if (!$this->policy->viewAny(request()->user())) {
+            abort(403, 'No tienes permiso para acceder a los planes.');
         }
         $sort = request('sort', 'name');
         $direction = request('direction', 'asc');
@@ -27,8 +35,8 @@ class PlanController extends Controller
      */
     public function create()
     {
-        if (!request()->user()->can('create', Plan::class)) {
-            abort(403, 'No tienes permiso para realizar esta acción.');
+        if (!$this->policy->create(request()->user())) {
+            abort(403, 'No tienes permiso para crear planes.');
         }
         return view('forms.plans', ['plan' => null]);
     }
@@ -43,8 +51,8 @@ class PlanController extends Controller
      */
     public function store(Request $request)
     {
-        if (!request()->user()->can('create', Plan::class)) {
-            abort(403, 'No tienes permiso para realizar esta acción.');
+        if (!$this->policy->create(request()->user())) {
+            abort(403, 'No tienes permiso para crear planes.');
         }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -76,8 +84,8 @@ class PlanController extends Controller
      */
     public function edit(Plan $plan)
     {
-        if (!request()->user()->can('update', $plan)) {
-            abort(403, 'No tienes permiso para realizar esta acción.');
+        if (!$this->policy->update(request()->user(), $plan)) {
+            abort(403, 'No tienes permiso para actualizar planes.');
         }
         return view('forms.plans', ['plan' => $plan]);
     }
@@ -87,8 +95,8 @@ class PlanController extends Controller
      */
     public function update(Request $request, Plan $plan)
     {
-        if (!request()->user()->can('update', $plan)) {
-            abort(403, 'No tienes permiso para realizar esta acción.');
+        if (!$this->policy->update(request()->user(), $plan)) {
+            abort(403, 'No tienes permiso para actualizar planes.');
         }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -113,8 +121,8 @@ class PlanController extends Controller
      */
     public function destroy(Plan $plan)
     {
-        if (!request()->user()->can('delete', $plan)) {
-            abort(403, 'No tienes permiso para realizar esta acción.');
+        if (!$this->policy->delete(request()->user(), $plan)) {
+            abort(403, 'No tienes permiso para eliminar planes.');
         }
         $plan->delete();
         return redirect()->route('plans')->with('status', 'Plan eliminado correctamente.');

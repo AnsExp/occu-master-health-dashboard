@@ -10,7 +10,7 @@
         </div>
 
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-            <x-search-order :url="route('form.ophthalmology')" class="mt-6" />
+            <x-search-order :url="route('ophthalmology.index')" class="mt-6" />
         </div>
 
         <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <form class="space-y-5" method="POST" action="{{ route('form.ophthalmology.store') }}">
+                <form class="space-y-5" method="POST" action="{{ route('ophthalmology.store') }}">
                     @csrf
                     @method('POST')
                     <input type="hidden" name="order[id]" value="{{ $order->id }}">

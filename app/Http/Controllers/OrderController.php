@@ -2,24 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ActionEnum;
-use App\Enums\TableEnum;
 use App\Models\Metadata;
 use App\Models\Certificate;
 use App\Models\CertificateType;
 use App\Models\Order;
-use App\Models\OrderDetail;
 use App\Models\Patient;
-use App\Models\Permission;
+use App\Policies\OrderPolicy;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class OrderController extends Controller
 {
+    private OrderPolicy $policy;
+
+    public function __construct()
+    {
+        $this->policy = new OrderPolicy();
+    }
+
     public function index()
     {
-        if (!request()->user()->can('viewAny', Order::class)) {
-            abort(403);
+        if (!$this->policy->viewAny(request()->user())) {
+            abort(403, 'No tienes permiso para acceder a las órdenes de pago.');
         }
         $filters = [
             'id_card' => request('id_card', null),
@@ -65,8 +69,8 @@ class OrderController extends Controller
 
     public function create()
     {
-        if (!request()->user()->can('create', Order::class)) {
-            abort(403);
+        if (!$this->policy->create(request()->user())) {
+            abort(403, 'No tienes permiso para crear órdenes de pago.');
         }
         $idCard = request('id_card', null);
         $patient = null;
@@ -86,8 +90,8 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
-        if (!request()->user()->can('create', Order::class)) {
-            abort(403);
+        if (!$this->policy->create(request()->user())) {
+            abort(403, 'No tienes permiso para crear órdenes de pago.');
         }
         $details = $request->input('order.details', []);
         $data = [];
@@ -143,10 +147,27 @@ class OrderController extends Controller
         return redirect()->intended(route('orders.pdf', ['order' => $order->order_number]));
     }
 
+    public function show(Order $order)
+    {
+        if (!$this->policy->view(request()->user(), $order)) {
+            abort(403, 'No tienes permiso para visualizar la orden de pago.');
+        }
+
+        $order->load(['details', 'patient.metadata']);
+
+        $pdf = PDF::loadView('documents.order', ['order' => $order]);
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->render();
+
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="order-' . $order->order_number . '.pdf"');
+    }
+
     public function pdf(Order $order)
     {
-        if (!request()->user()->can('view', $order)) {
-            abort(403);
+        if (!$this->policy->view(request()->user(), $order)) {
+            abort(403, 'No tienes permiso para visualizar todos los documentos asociados a la orden.');
         }
 
         $order->load(['details', 'patient.metadata']);

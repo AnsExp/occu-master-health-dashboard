@@ -66,7 +66,7 @@
                                     {{ $patient->phone }}
                                 </td>
                                 <td class="px-4 py-3 align-top text-right text-gray-700">
-                                    <a href="{{ route('certificates', ['patient_id_card' => $patient->id_card]) }}" class="text-gray-700 hover:underline">Certificados</a>
+                                    <a href="{{ route('orders', ['id_card' => $patient->id_card]) }}" class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50">Certificados</a>
                                 </td>
                             </tr>
                         @endforeach

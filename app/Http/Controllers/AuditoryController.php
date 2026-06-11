@@ -7,16 +7,23 @@ use App\Enums\LevelEnum;
 use App\Enums\PermissionEnum;
 use App\Enums\TableEnum;
 use App\Models\AuditLog;
-use App\Models\Permission;
 use App\Models\User;
+use App\Policies\AuditoryPolicy;
 use Illuminate\Http\Request;
 
 class AuditoryController extends Controller
 {
+    private AuditoryPolicy $policy;
+
+    public function __construct()
+    {
+        $this->policy = new AuditoryPolicy();
+    }
+
     public function index(Request $request)
     {
-        if (!PermissionEnum::can(PermissionEnum::VIEW_LOGS)) {
-            abort(403, 'No tienes permiso para acceder a esta página.');
+        if (!$this->policy->viewAny(auth()->user())) {
+            abort(403, 'No tienes permiso para acceder a los registros de auditoría.');
         }
 
         $levels = array_map(static fn(LevelEnum $level) => $level->code(), LevelEnum::cases());
@@ -65,8 +72,8 @@ class AuditoryController extends Controller
 
     public function detail(AuditLog $log)
     {
-        if (!PermissionEnum::can(PermissionEnum::VIEW_LOGS)) {
-            abort(403, 'No tienes permiso para acceder a esta página.');
+        if (!$this->policy->view(auth()->user(), $log)) {
+            abort(403, 'No tienes permiso para acceder a los registros de auditoría.');
         }
 
         $log->load('user');

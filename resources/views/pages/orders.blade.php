@@ -80,49 +80,50 @@
 		<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
 			<div class="overflow-x-auto">
 				<table class="w-full divide-y divide-gray-200 text-sm">
-				<thead class="bg-gray-50">
-					<tr>
-						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
-							Nro.
-						</th>
-						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
-							Paciente
-						</th>
-						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
-							Cédula
-						</th>
-						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
-							Fecha
-						</th>
-						<th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-600">
-						</th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-gray-100">
-					@foreach($orders as $order)
-						<tr class="hover:bg-gray-50">
-							<td class="px-4 py-3 align-top text-gray-700">
-								{{ $order->order_number }}
-							</td>
-							<td class="px-4 py-3 align-top text-gray-700">
-								{{ $order->patient->first_name . ' ' . $order->patient->last_name }}
-							</td>
-							<td class="px-4 py-3 align-top text-gray-700">
-								{{ $order->patient->id_card }}
-							</td>
-							<td class="px-4 py-3 align-top text-gray-700">
-								{{ format_datetime($order->created_at, false, true) }}
-							</td>
-							<td class="px-4 py-3 align-top text-right text-gray-700">
-								<div class="flex justify-end gap-2">
-									<a href="{{ route('orders.pdf', ['order' => $order->order_number]) }}" target="_blank"
-										rel="noopener"
-										class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50">Ver</a>
-								</div>
-							</td>
+					<thead class="bg-gray-50">
+						<tr>
+							<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
+								Nro.
+							</th>
+							<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
+								Paciente
+							</th>
+							<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
+								Cédula
+							</th>
+							<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
+								Fecha
+							</th>
 						</tr>
-					@endforeach
-				</tbody>
+					</thead>
+					<tbody class="divide-y divide-gray-100">
+						@foreach($orders as $order)
+							<tr class="hover:bg-gray-50">
+								<td class="px-4 py-3 align-top text-gray-700">
+									{{ $order->order_number }}
+								</td>
+								<td class="px-4 py-3 align-top text-gray-700">
+									{{ $order->patient->first_name . ' ' . $order->patient->last_name }}
+								</td>
+								<td class="px-4 py-3 align-top text-gray-700">
+									{{ $order->patient->id_card }}
+								</td>
+								<td class="px-4 py-3 align-top text-gray-700">
+									{{ format_datetime($order->created_at, false, true) }}
+								</td>
+								<td class="px-4 py-3 align-top text-right text-gray-700">
+									<div class="flex justify-end gap-2">
+										<a href="{{ route('orders.show', ['order' => $order->order_number]) }}" target="_blank"
+											rel="noopener"
+											class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50">Ver</a>
+										<a href="{{ route('orders.pdf', ['order' => $order->order_number]) }}" target="_blank"
+											rel="noopener"
+											class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50">Todos</a>
+									</div>
+								</td>
+							</tr>
+						@endforeach
+					</tbody>
 				</table>
 			</div>
 

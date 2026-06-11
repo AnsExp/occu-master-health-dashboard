@@ -12,7 +12,7 @@
 						Acceso denegado
 					</h1>
 					<p class="mt-4 text-base leading-7 text-gray-600">
-						No cuentas con los permisos necesarios para ver este contenido.
+						{{ $exception?->getMessage() ?? 'No tienes permiso para acceder a esta página o realizar esta acción.' }}
 						Si crees que esto es un error, contacta al administrador del sistema.
 					</p>
 

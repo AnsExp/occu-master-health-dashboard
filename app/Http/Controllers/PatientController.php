@@ -5,17 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Patient;
 use App\Models\Plan;
 use App\Models\PlanDetail;
+use App\Policies\PatientPolicy;
 use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
+    private PatientPolicy $policy;
+
+    public function __construct()
+    {
+        $this->policy = new PatientPolicy();
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        if (!request()->user()->can('viewAny', Patient::class)) {
-            abort(403);
+        if (!$this->policy->viewAny(request()->user())) {
+            abort(403, 'No tienes permiso para acceder a los pacientes.');
         }
         $sort = request('sort', 'first_name');
         $direction = request('direction', 'asc');
@@ -36,8 +44,8 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
-        if (!request()->user()->can('create', Patient::class)) {
-            abort(403);
+        if (!$this->policy->create(request()->user())) {
+            abort(403, 'No tienes permiso para crear pacientes.');
         }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -59,7 +67,7 @@ class PatientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Plan $plan)
+    public function show(Patient $patient)
     {
         //
     }
@@ -67,7 +75,7 @@ class PatientController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Plan $plan)
+    public function edit(Patient $patient)
     {
         //
     }
@@ -75,7 +83,7 @@ class PatientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Plan $plan)
+    public function update(Request $request, Patient $patient)
     {
         //
     }
@@ -83,12 +91,12 @@ class PatientController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Plan $plan)
+    public function destroy(Patient $patient)
     {
-        if (!request()->user()->can('delete', Patient::class)) {
-            abort(403);
+        if (!$this->policy->delete(request()->user(), $patient)) {
+            abort(403, 'No tienes permiso para eliminar pacientes.');
         }
-        $plan->delete();
-        return redirect()->route('plans')->with('status', 'Plan eliminado correctamente.');
+        $patient->delete();
+        return redirect()->route('patients')->with('status', 'Paciente eliminado correctamente.');
     }
 }

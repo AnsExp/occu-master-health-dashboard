@@ -1,6 +1,6 @@
 @extends('components.layout')
 
-@section('title', 'Certificados')
+@section('title', isset($title) ? $title : 'Certificados')
 
 @section('content')
 	<section class="mx-auto max-w-6xl space-y-6 py-6">
@@ -8,7 +8,7 @@
 		<div class="flex flex-col gap-2">
 			<div class="flex items-center justify-between">
 				<div>
-					<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Certificados médicos</h1>
+					<h1 class="text-2xl font-semibold tracking-tight text-gray-900">{{ isset($title) ? $title : 'Certificados médicos' }}</h1>
 					<p class="mt-2 text-sm text-gray-600">Busca y filtra certificados por número, cédula del paciente o
 						rango de fechas.</p>
 				</div>

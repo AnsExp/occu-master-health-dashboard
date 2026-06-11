@@ -104,7 +104,7 @@
     @php
         \Carbon\Carbon::setLocale('es');
 
-        $patient = $certificate->patient;
+        $patient = $certificate->order->patient;
         $doctor = $certificate->doctor;
         $order = $certificate->order;
         $patientName = $patient ? trim(($patient->first_name ?? '') . ' ' . ($patient->last_name ?? '')) : 'N/D';

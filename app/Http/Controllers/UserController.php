@@ -2,22 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PermissionEnum;
-use App\Enums\RoleEnum;
-use App\Enums\SpecialtyEnum;
 use App\Http\Requests\UserRequest;
 use App\Http\Services\UserStoreService;
-use App\Models\Doctor;
-use App\Models\Specialty;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    private UserPolicy $policy;
+
+    public function __construct()
+    {
+        $this->policy = new UserPolicy();
+    }
+
     public function index()
     {
-        if (!request()->user()->can('viewAny', User::class)) {
+        if (!$this->policy->viewAny(request()->user())) {
             abort(403);
         }
         $sort = request('sort', 'name');
@@ -28,7 +31,7 @@ class UserController extends Controller
 
     public function store(UserRequest $request, UserStoreService $service)
     {
-        if (!request()->user()->can('create', User::class)) {
+        if (!$this->policy->create(request()->user())) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         $validated = $request->validated();
@@ -41,7 +44,7 @@ class UserController extends Controller
 
     public function create()
     {
-        if (!auth()->user()->can('create', User::class)) {
+        if (!$this->policy->create(request()->user())) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         return view('forms.users', ['user' => null]);
@@ -49,7 +52,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if (!request()->user()->can('update', $user)) {
+        if (!$this->policy->update(request()->user(), $user)) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         if (!$user->exists) {
@@ -87,7 +90,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if (!request()->user()->can('delete', $user)) {
+        if (!$this->policy->delete(request()->user(), $user)) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
         $user->delete();

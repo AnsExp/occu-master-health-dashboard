@@ -3,8 +3,6 @@
 use App\Http\Controllers\AudiologyController;
 use App\Http\Controllers\AuditoryController;
 use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\CertificateController;
-use App\Http\Controllers\FormController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OccupationalController;
 use App\Http\Controllers\OphthalmologyController;
@@ -49,21 +47,19 @@ Route::delete('/plans/{plan}', [PlanController::class, 'destroy'])->middleware('
 Route::get('/plans/json', [PlanController::class, 'json'])->middleware('auth')->name('plans.json');
 
 Route::get('/orders/create', [OrderController::class, 'create'])->middleware('auth')->name('orders.create');
-Route::get('/orders/{order:order_number}', [OrderController::class, 'pdf'])->middleware('auth')->name('orders.pdf');
+Route::get('/orders/{order:order_number}', [OrderController::class, 'show'])->middleware('auth')->name('orders.show');
+Route::get('/orders/all/{order:order_number}', [OrderController::class, 'pdf'])->middleware('auth')->name('orders.pdf');
 Route::get('/orders', [OrderController::class, 'index'])->middleware('auth')->name('orders');
 Route::post('/orders', [OrderController::class, 'store'])->middleware('auth')->name('orders.store');
 
 Route::get('/patients', [PatientController::class, 'index'])->middleware('auth')->name('patients');
 
-Route::get('/certificates', [CertificateController::class, 'index'])->middleware('auth')->name('certificates');
-
-Route::get('/forms', [FormController::class, 'index'])->middleware('auth')->name('forms');
-Route::get('/forms/audiology', [AudiologyController::class, 'create'])->middleware('auth')->name('form.audiology');
-Route::get('/forms/occupational', [OccupationalController::class, 'create'])->middleware('auth')->name('form.occupational');
-Route::get('/forms/ophthalmology', [OphthalmologyController::class, 'create'])->middleware('auth')->name('form.ophthalmology');
-Route::post('/forms/audiology', [AudiologyController::class, 'store'])->middleware('auth')->name('form.audiology.store');
-Route::post('/forms/occupational', [OccupationalController::class, 'store'])->middleware('auth')->name('form.occupational.store');
-Route::post('/forms/ophthalmology', [OphthalmologyController::class, 'store'])->middleware('auth')->name('form.ophthalmology.store');
+Route::get('/audiology', [AudiologyController::class, 'index'])->middleware('auth')->name('audiology.index');
+Route::get('/occupational', [OccupationalController::class, 'index'])->middleware('auth')->name('occupational.index');
+Route::get('/ophthalmology', [OphthalmologyController::class, 'index'])->middleware('auth')->name('ophthalmology.index');
+Route::post('/audiology', [AudiologyController::class, 'store'])->middleware('auth')->name('audiology.store');
+Route::post('/occupational', [OccupationalController::class, 'store'])->middleware('auth')->name('occupational.store');
+Route::post('/ophthalmology', [OphthalmologyController::class, 'store'])->middleware('auth')->name('ophthalmology.store');
 
 Route::get('/documents/{certificate:certificate_number}', [PDFController::class, 'generate'])->middleware('auth')->name('certificates.pdf');
 
